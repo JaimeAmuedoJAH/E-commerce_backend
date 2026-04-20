@@ -15,4 +15,8 @@ public class ProductoEntity {
     private Double precio;
     private String imagen;
     private Integer stock;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    private CategoriaEntity categoria;
 }
