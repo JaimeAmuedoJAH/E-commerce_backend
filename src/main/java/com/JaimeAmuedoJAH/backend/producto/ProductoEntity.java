@@ -4,6 +4,7 @@ package com.JaimeAmuedoJAH.backend.producto;
 @Table(name = "producto")
 @Data
 public class ProductoEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
