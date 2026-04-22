@@ -1,8 +1,11 @@
 package com.JaimeAmuedoJAH.backend.categoria;
 
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/categorias")
@@ -11,22 +14,50 @@ public class CategoriaController {
 
     private final CategoriaService categoriaService;
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
-
+    /**
+     * Obtener todas las categorías con sus productos
+     */
     @GetMapping("/all")
-    public ResponseEntity<List<CategoriaEntity>> getAllCategorias() {
-
-        return ResponseEntity.ok(categoriaRepository.findAll());
+    public ResponseEntity<List<CategoriaResponseDTO>> obtenerTodasLasCategorias() {
+        List<CategoriaResponseDTO> categorias = categoriaService.obtenerTodasLasCategorias();
+        return ResponseEntity.ok(categorias);
     }
 
+    /**
+     * Obtener una categoría por ID con sus productos
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaEntity> getCategoriaById(@PathVariable Long id) {
-
-        CategoriaEntity categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria not found with id " + id));
+    public ResponseEntity<CategoriaResponseDTO> obtenerCategoriaPorId(@PathVariable Long id) {
+        CategoriaResponseDTO categoria = categoriaService.obtenerCategoriaPorId(id);
         return ResponseEntity.ok(categoria);
     }
 
-    
+    /**
+     * Crear una nueva categoría
+     */
+    @PostMapping("/add")
+    public ResponseEntity<CategoriaResponseDTO> crearCategoria(@RequestBody CategoriaRequestDTO categoriaDetails) {
+        CategoriaResponseDTO categoria = categoriaService.crearCategoria(categoriaDetails);
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoria);
+    }
+
+    /**
+     * Actualizar una categoría existente
+     */
+    @PutMapping("/update/{id}")
+    public ResponseEntity<CategoriaResponseDTO> actualizarCategoria(
+            @PathVariable Long id,
+            @RequestBody CategoriaRequestDTO categoriaDetails) {
+        CategoriaResponseDTO categoria = categoriaService.actualizarCategoria(id, categoriaDetails);
+        return ResponseEntity.ok(categoria);
+    }
+
+    /**
+     * Eliminar una categoría
+     */
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> eliminarCategoria(@PathVariable Long id) {
+        categoriaService.eliminarCategoria(id);
+        return ResponseEntity.noContent().build();
+    }
 }
