@@ -1,54 +1,76 @@
 package com.JaimeAmuedoJAH.backend.producto;
 
+import com.JaimeAmuedoJAH.backend.producto.dto.ProductoRequestDTO;
+import com.JaimeAmuedoJAH.backend.producto.dto.ProductoResponseDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/producto")
+@RequestMapping("/productos")
 @RequiredArgsConstructor
 public class ProductoController {
 
     private final ProductoService productoService;
 
-    @Autowired
-    private ProductoRepository productoRepository;
-
+    /**
+     * Obtener todos los productos
+     */
     @GetMapping("/all")
-    public List<ProductoEntity> getAllProductos() {
-
-        return ResponseEntity.ok(productoRepository.findAll());
+    public ResponseEntity<List<ProductoResponseDTO>> obtenerTodosLosProductos() {
+        List<ProductoResponseDTO> productos = productoService.obtenerTodosLosProductos();
+        return ResponseEntity.ok(productos);
     }
 
+    /**
+     * Obtener un producto por ID
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoEntity> getProductoById(@PathVariable Long id) {
-
-        ProductoEntity producto = productoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Producto not found with id " + id));
+    public ResponseEntity<ProductoResponseDTO> obtenerProductoPorId(@PathVariable Long id) {
+        ProductoResponseDTO producto = productoService.obtenerProductoPorId(id);
         return ResponseEntity.ok(producto);
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<ProductoEntity> addProducto(
-    @RequestBody ProductoEntity producto) {
-
-        ProductoEntity newProducto = productoRepository.save(producto);
-        return ResponseEntity.ok(newProducto);
+    /**
+     * Obtener productos por categoría
+     */
+    @GetMapping("/categoria/{categoriaId}")
+    public ResponseEntity<List<ProductoResponseDTO>> obtenerProductosPorCategoria(
+            @PathVariable Long categoriaId) {
+        List<ProductoResponseDTO> productos = productoService.obtenerProductosPorCategoria(categoriaId);
+        return ResponseEntity.ok(productos);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteProducto(@PathVariable Long id) {
+    /**
+     * Crear un nuevo producto
+     */
+    @PostMapping("/add")
+    public ResponseEntity<ProductoResponseDTO> crearProducto(
+            @RequestBody ProductoRequestDTO productoDetails) {
+        ProductoResponseDTO producto = productoService.crearProducto(productoDetails);
+        return ResponseEntity.status(HttpStatus.CREATED).body(producto);
+    }
 
-        productoRepository.deleteById(id);
+    /**
+     * Actualizar un producto existente
+     */
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ProductoResponseDTO> actualizarProducto(
+            @PathVariable Long id,
+            @RequestBody ProductoRequestDTO productoDetails) {
+        ProductoResponseDTO producto = productoService.actualizarProducto(id, productoDetails);
+        return ResponseEntity.ok(producto);
+    }
+
+    /**
+     * Eliminar un producto
+     */
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
+        productoService.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }
-
-   @PutMapping("/update/{id}")
-    public ResponseEntity<ProductoResponseDTO> updateProducto(
-    @PathVariable Long id,
-    @RequestBody ProductoRequestDTO productoDetails) {
-
-        ProductoResponseDTO updated = productoService.actualizarProducto(id, productoDetails);
-        return ResponseEntity.ok(updated);
-    }   
 }
