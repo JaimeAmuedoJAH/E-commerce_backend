@@ -1,4 +1,4 @@
-package com.JaimeAmuedoJAH.backend.categoria.dto;
+package com.JaimeAmuedoJAH.backend.categoria;
 
 import lombok.Data;
 
