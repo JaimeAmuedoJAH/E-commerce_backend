@@ -1,4 +1,4 @@
-package com.JaimeAmuedoJAH.backend.producto.dto;
+package com.JaimeAmuedoJAH.backend.producto;
 
 import lombok.Data;
 import jakarta.validation.constraints.NotNull;
