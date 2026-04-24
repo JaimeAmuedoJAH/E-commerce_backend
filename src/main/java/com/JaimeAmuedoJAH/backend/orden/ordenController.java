@@ -1,7 +1,7 @@
 package com.JaimeAmuedoJAH.backend.orden;
 
-import com.JaimeAmuedoJAH.backend.orden.dto.OrdenRequestDTO;
-import com.JaimeAmuedoJAH.backend.orden.dto.OrdenResponseDTO;
+import com.JaimeAmuedoJAH.backend.orden.OrdenRequestDTO;
+import com.JaimeAmuedoJAH.backend.orden.OrdenResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

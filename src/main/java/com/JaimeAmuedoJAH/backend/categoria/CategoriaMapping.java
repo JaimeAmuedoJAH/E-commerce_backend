@@ -1,7 +1,7 @@
 package com.JaimeAmuedoJAH.backend.categoria;
 
 import com.JaimeAmuedoJAH.backend.producto.ProductoMapping;
-import com.JaimeAmuedoJAH.backend.producto.dto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.producto.ProductoResponseDTO;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

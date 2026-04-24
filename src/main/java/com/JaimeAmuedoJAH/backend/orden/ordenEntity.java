@@ -1,6 +1,6 @@
 package com.JaimeAmuedoJAH.backend.orden;
 
-import com.JaimeAmuedoJAH.backend.usuario.usuarioEntity;
+import com.JaimeAmuedoJAH.backend.usuario.UsuarioEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +21,7 @@ public class OrdenEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
-    private usuarioEntity cliente;
+    private UsuarioEntity cliente;
 
     @Column(nullable = false)
     private String direccion;

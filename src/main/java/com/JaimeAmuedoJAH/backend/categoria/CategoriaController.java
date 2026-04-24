@@ -1,6 +1,6 @@
 package com.JaimeAmuedoJAH.backend.categoria;
 
-import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
