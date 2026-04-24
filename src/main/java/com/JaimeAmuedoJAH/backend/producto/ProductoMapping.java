@@ -1,9 +1,9 @@
 package com.JaimeAmuedoJAH.backend.producto;
 
-import com.JaimeAmuedoJAH.backend.producto.dto.ProductoResponseDTO;
-import com.JaimeAmuedoJAH.backend.producto.dto.ProductoRequestDTO;
+import com.JaimeAmuedoJAH.backend.producto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.producto.ProductoRequestDTO;
 import com.JaimeAmuedoJAH.backend.categoria.CategoriaEntity;
-import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
 
 public class ProductoMapping {
 

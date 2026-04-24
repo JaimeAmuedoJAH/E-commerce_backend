@@ -1,12 +1,12 @@
 package com.JaimeAmuedoJAH.backend.orden;
 
-import com.JaimeAmuedoJAH.backend.orden.dto.OrdenRequestDTO;
-import com.JaimeAmuedoJAH.backend.orden.dto.OrdenResponseDTO;
-import com.JaimeAmuedoJAH.backend.orden.dto.OrdenItemRequestDTO;
-import com.JaimeAmuedoJAH.backend.orden.dto.OrdenItemResponseDTO;
+import com.JaimeAmuedoJAH.backend.orden.OrdenRequestDTO;
+import com.JaimeAmuedoJAH.backend.orden.OrdenResponseDTO;
+import com.JaimeAmuedoJAH.backend.orden.OrdenItemRequestDTO;
+import com.JaimeAmuedoJAH.backend.orden.OrdenItemResponseDTO;
 import com.JaimeAmuedoJAH.backend.producto.ProductoEntity;
 import com.JaimeAmuedoJAH.backend.producto.ProductoMapping;
-import com.JaimeAmuedoJAH.backend.usuario.usuarioEntity;
+import com.JaimeAmuedoJAH.backend.usuario.UsuarioEntity;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,7 +63,7 @@ public class OrdenMapping {
         return response;
     }
 
-    public static OrdenEntity toEntity(OrdenRequestDTO request, usuarioEntity cliente, List<ProductoEntity> productos) {
+    public static OrdenEntity toEntity(OrdenRequestDTO request, UsuarioEntity cliente, List<ProductoEntity> productos) {
         if (request == null || cliente == null) {
             return null;
         }
@@ -105,7 +105,7 @@ public class OrdenMapping {
     }
 
     public static void updateEntity(OrdenRequestDTO request, OrdenEntity orden,
-                                   usuarioEntity cliente, List<ProductoEntity> productos) {
+                                   UsuarioEntity cliente, List<ProductoEntity> productos) {
         if (request == null || orden == null) {
             return;
         }
