@@ -2,7 +2,7 @@ package com.JaimeAmuedoJAH.backend.carrito;
 
 import com.JaimeAmuedoJAH.backend.producto.ProductoEntity;
 import com.JaimeAmuedoJAH.backend.producto.ProductoMapping;
-import com.JaimeAmuedoJAH.backend.producto.dto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.producto.ProductoResponseDTO;
 
 import java.util.Collections;
 import java.util.List;

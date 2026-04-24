@@ -1,12 +1,12 @@
 package com.JaimeAmuedoJAH.backend.orden;
 
-import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
-import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
-import com.JaimeAmuedoJAH.backend.orden.dto.OrdenItemRequestDTO;
+import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.orden.OrdenItemRequestDTO;
 import com.JaimeAmuedoJAH.backend.producto.ProductoEntity;
 import com.JaimeAmuedoJAH.backend.producto.ProductoRepository;
-import com.JaimeAmuedoJAH.backend.usuario.usuarioEntity;
-import com.JaimeAmuedoJAH.backend.usuario.usuarioRepository;
+import com.JaimeAmuedoJAH.backend.usuario.UsuarioEntity;
+import com.JaimeAmuedoJAH.backend.usuario.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class OrdenService {
 
     private final OrdenRepository ordenRepository;
-    private final usuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
 
     /**
@@ -76,7 +76,7 @@ public class OrdenService {
      */
     public OrdenResponseDTO crearOrden(OrdenRequestDTO ordenRequest) {
         // Validar cliente
-        usuarioEntity cliente = usuarioRepository.findById(ordenRequest.getClienteId())
+        UsuarioEntity cliente = usuarioRepository.findById(ordenRequest.getClienteId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Cliente not found with id " + ordenRequest.getClienteId()));
 

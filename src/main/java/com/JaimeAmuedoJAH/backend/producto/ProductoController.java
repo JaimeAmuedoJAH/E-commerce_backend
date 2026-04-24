@@ -1,7 +1,7 @@
 package com.JaimeAmuedoJAH.backend.producto;
 
-import com.JaimeAmuedoJAH.backend.producto.dto.ProductoRequestDTO;
-import com.JaimeAmuedoJAH.backend.producto.dto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.producto.ProductoRequestDTO;
+import com.JaimeAmuedoJAH.backend.producto.ProductoResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

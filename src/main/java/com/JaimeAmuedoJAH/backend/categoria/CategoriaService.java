@@ -1,6 +1,6 @@
 package com.JaimeAmuedoJAH.backend.categoria;
 
-import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -70,3 +70,4 @@ public class CategoriaService {
                         "Categoria not found with id " + id));
         categoriaRepository.delete(categoria);
     }
+}

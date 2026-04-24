@@ -1,11 +1,11 @@
 package com.JaimeAmuedoJAH.backend.carrito;
 
-import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
-import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
 import com.JaimeAmuedoJAH.backend.producto.ProductoEntity;
 import com.JaimeAmuedoJAH.backend.producto.ProductoMapping;
 import com.JaimeAmuedoJAH.backend.producto.ProductoRepository;
-import com.JaimeAmuedoJAH.backend.producto.dto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.producto.ProductoResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

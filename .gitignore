@@ -1,33 +1,43 @@
-HELP.md
+# Maven
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+*.jar
+*.war
+*.ear
+*.class
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
+# IDE - IntelliJ
+.idea/
 *.iml
+*.iws
 *.ipr
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+# IDE - Eclipse
+.eclipse/
+.classpath
+.project
+.settings/
 
-### VS Code ###
+# IDE - VSCode
 .vscode/
+
+# Spring Boot
+application-local.properties
+application-prod.properties
+
+# Variables de entorno y secretos
+.env
+*.env
+secrets.properties
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# H2 Database (si se genera en disco)
+*.db
+*.mv.db
+*.trace.db
