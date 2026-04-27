@@ -1,0 +1,44 @@
+spring.application.name=ecommerce-backend
+server.port=8110
+server.servlet.context-path=/api
+
+# ==================== JWT Configuration ====================
+# IMPORTANTE: Cambiar a una clave segura y aleatoria en producción
+jwt.secret=CAMBIAR_ESTA_CLAVE_SECRETA_EN_PRODUCCION_1234567890
+jwt.expiration-ms=86400000
+
+# ==================== Database Configuration ====================
+# H2 Database - Para desarrollo local con persistencia
+spring.datasource.url=jdbc:h2:file:./data/ecommerce;MODE=MySQL;AUTO_SERVER=TRUE
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=true
+
+# ==================== Logging Configuration ====================
+# Nivel de logging general
+logging.level.root=WARN
+
+# Logging para la aplicación
+logging.level.com.JaimeAmuedoJAH.backend=INFO
+
+# Logging para Spring Boot
+logging.level.org.springframework.boot=INFO
+logging.level.org.springframework.web=INFO
+logging.level.org.springframework.security=INFO
+
+# Formato de logs
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+
+# ==================== Swagger/OpenAPI Configuration ====================
+springdoc.api-docs.path=/v3/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.swagger-ui.enabled=true
+springdoc.swagger-ui.operationsSorter=method
+springdoc.swagger-ui.tagsSorter=alpha
