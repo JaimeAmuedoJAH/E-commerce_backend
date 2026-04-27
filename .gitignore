@@ -21,8 +21,9 @@ target/
 .vscode/
 
 # Spring Boot
-application-local.properties
-application-prod.properties
+src/main/resources/application.properties
+src/main/resources/application-local.properties
+src/main/resources/application-prod.properties
 
 # Variables de entorno y secretos
 .env
@@ -38,6 +39,7 @@ logs/
 Thumbs.db
 
 # H2 Database (si se genera en disco)
+data/
 *.db
 *.mv.db
 *.trace.db
