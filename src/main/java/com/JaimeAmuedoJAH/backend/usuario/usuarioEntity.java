@@ -1,5 +1,7 @@
 package com.JaimeAmuedoJAH.backend.usuario;
 
+import com.JaimeAmuedoJAH.backend.tarjeta.TarjetaEntity;
+import java.util.List;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +29,9 @@ public class UsuarioEntity {
 
     @Column(nullable = false)
     private String rol;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TarjetaEntity> tarjetas;
 
     public UsuarioEntity() {
     }
