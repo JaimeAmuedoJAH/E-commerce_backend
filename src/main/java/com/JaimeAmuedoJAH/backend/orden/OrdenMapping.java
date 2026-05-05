@@ -24,14 +24,13 @@ public class OrdenMapping {
         response.setTotal(orden.getTotal());
         response.setEstado(orden.getEstado().name());
         response.setFechaCreacion(orden.getFechaCreacion());
+        response.setCodigoTransaccion(orden.getCodigoTransaccion());
 
-        // Mapear información del cliente
         if (orden.getCliente() != null) {
             response.setClienteId(orden.getCliente().getId());
             response.setClienteNombre(orden.getCliente().getNombre());
         }
 
-        // Mapear ítems de la orden
         if (orden.getItems() != null && !orden.getItems().isEmpty()) {
             List<OrdenItemResponseDTO> itemsDTO = orden.getItems().stream()
                     .map(OrdenMapping::toItemResponseDTO)
@@ -55,7 +54,6 @@ public class OrdenMapping {
         response.setPrecioUnitario(item.getPrecioUnitario());
         response.setSubtotal(item.getSubtotal());
 
-        // Mapear información del producto
         if (item.getProducto() != null) {
             response.setProducto(ProductoMapping.toResponseDTO(item.getProducto()));
         }
@@ -68,12 +66,10 @@ public class OrdenMapping {
             return null;
         }
 
-        // Crear ítems de la orden
         List<OrdenItemEntity> items = request.getItems().stream()
                 .map(itemRequest -> toItemEntity(itemRequest, productos))
                 .collect(Collectors.toList());
 
-        // Calcular total
         double total = items.stream()
                 .mapToDouble(OrdenItemEntity::getSubtotal)
                 .sum();
@@ -83,11 +79,11 @@ public class OrdenMapping {
                 .direccion(request.getDireccion())
                 .total(total)
                 .items(items)
+                .codigoTransaccion(request.getCodigoTransaccion())
                 .build();
     }
 
     private static OrdenItemEntity toItemEntity(OrdenItemRequestDTO request, List<ProductoEntity> productos) {
-        // Encontrar el producto correspondiente
         ProductoEntity producto = productos.stream()
                 .filter(p -> p.getId().equals(request.getProductoId()))
                 .findFirst()
@@ -105,7 +101,7 @@ public class OrdenMapping {
     }
 
     public static void updateEntity(OrdenRequestDTO request, OrdenEntity orden,
-                                   UsuarioEntity cliente, List<ProductoEntity> productos) {
+                                    UsuarioEntity cliente, List<ProductoEntity> productos) {
         if (request == null || orden == null) {
             return;
         }
@@ -118,17 +114,18 @@ public class OrdenMapping {
             orden.setDireccion(request.getDireccion());
         }
 
-        // Actualizar ítems si se proporcionan
+        if (request.getCodigoTransaccion() != null) {
+            orden.setCodigoTransaccion(request.getCodigoTransaccion());
+        }
+
         if (request.getItems() != null && !request.getItems().isEmpty()) {
             List<OrdenItemEntity> items = request.getItems().stream()
                     .map(itemRequest -> toItemEntity(itemRequest, productos))
                     .collect(Collectors.toList());
 
-            // Limpiar ítems existentes y agregar nuevos
             orden.getItems().clear();
             orden.getItems().addAll(items);
 
-            // Recalcular total
             double total = items.stream()
                     .mapToDouble(OrdenItemEntity::getSubtotal)
                     .sum();

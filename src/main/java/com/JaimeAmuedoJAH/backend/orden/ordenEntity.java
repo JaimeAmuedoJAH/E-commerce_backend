@@ -39,6 +39,9 @@ public class OrdenEntity {
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrdenItemEntity> items;
 
+    @Column(name = "codigo_transaccion")
+    private String codigoTransaccion;
+
     public OrdenEntity() {
         this.fechaCreacion = LocalDateTime.now();
         this.estado = EstadoOrden.PENDIENTE;

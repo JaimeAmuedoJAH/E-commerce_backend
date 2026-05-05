@@ -16,4 +16,6 @@ public class OrdenRequestDTO {
 
     @NotEmpty(message = "La orden debe tener al menos un ítem")
     private List<OrdenItemRequestDTO> items;
+
+    private String codigoTransaccion;
 }
