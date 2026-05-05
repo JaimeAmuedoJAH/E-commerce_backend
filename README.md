@@ -331,6 +331,12 @@ Orígenes permitidos configurados para desarrollo:
 
 ---
 
-**Versión**: 1.1  
+## ❌ Posibles Errores
+
+1. Algunos nombres de archivos pueden dar error al estar nombrados con la primera letra minúscula. Si la aplicación no ejecuta correctamente comprobar archivos de las carpetas y comprobarlo. (Ejemplo: Dentro de la carpeta usuario existe el archivo usuarioEntity.java, este nombre debe ser modificado por UsuarioEntity.java; usuario => Usuario)
+
+---
+
+**Versión**: 1.0  
 **Última actualización**: Mayo 2026  
-**Autor**: Jaime Amuedo JAH
+**Autor**: JaimeAmuedoJAH
