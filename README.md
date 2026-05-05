@@ -337,6 +337,6 @@ Orígenes permitidos configurados para desarrollo:
 
 ---
 
-**Versión**: 1.0  
+**Versión**: 1.0.0  
 **Última actualización**: Mayo 2026  
 **Autor**: JaimeAmuedoJAH
