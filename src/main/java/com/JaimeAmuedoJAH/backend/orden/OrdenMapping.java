@@ -75,12 +75,14 @@ public class OrdenMapping {
                 .sum();
 
         return OrdenEntity.builder()
-                .cliente(cliente)
-                .direccion(request.getDireccion())
-                .total(total)
-                .items(items)
-                .codigoTransaccion(request.getCodigoTransaccion())
-                .build();
+        .cliente(cliente)
+        .direccion(request.getDireccion())
+        .total(total)
+        .items(items)
+        .codigoTransaccion(request.getCodigoTransaccion())
+        .estado(OrdenEntity.EstadoOrden.PENDIENTE)
+        .fechaCreacion(java.time.LocalDateTime.now())
+        .build();
     }
 
     private static OrdenItemEntity toItemEntity(OrdenItemRequestDTO request, List<ProductoEntity> productos) {
