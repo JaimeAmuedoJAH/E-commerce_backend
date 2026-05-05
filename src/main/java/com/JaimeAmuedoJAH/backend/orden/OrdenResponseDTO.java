@@ -15,4 +15,5 @@ public class OrdenResponseDTO {
     private String estado;
     private LocalDateTime fechaCreacion;
     private List<OrdenItemResponseDTO> items;
+    private String codigoTransaccion;
 }
