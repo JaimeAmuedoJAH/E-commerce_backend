@@ -1,19 +1,20 @@
 package com.JaimeAmuedoJAH.backend.entity;
 
-import com.JaimeAmuedoJAH.backend.entity.ProductoEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
 @Table(name = "categoria")
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class CategoriaEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,9 +22,9 @@ public class CategoriaEntity {
     @Column(nullable = false)
     private String nombre;
 
-    @OneToMany(mappedBy = "categoria", fetch = FetchType.LAZY)
-    private List<ProductoEntity> productos;
+    @Column
+    private String descripcion;
 
-    public CategoriaEntity() {
-    }
+    @OneToMany(mappedBy = "categoria", fetch = FetchType.EAGER)
+    private List<ProductoEntity> productos;
 }

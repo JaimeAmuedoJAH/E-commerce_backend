@@ -7,11 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "orden")
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class OrdenEntity {
 
@@ -42,9 +44,14 @@ public class OrdenEntity {
     @Column(name = "codigo_transaccion")
     private String codigoTransaccion;
 
-    public OrdenEntity() {
-        this.fechaCreacion = LocalDateTime.now();
-        this.estado = EstadoOrden.PENDIENTE;
+    @PrePersist
+    public void prePersist() {
+        if (this.fechaCreacion == null) {
+            this.fechaCreacion = LocalDateTime.now();
+        }
+        if (this.estado == null) {
+            this.estado = EstadoOrden.PENDIENTE;
+        }
     }
 
     public enum EstadoOrden {

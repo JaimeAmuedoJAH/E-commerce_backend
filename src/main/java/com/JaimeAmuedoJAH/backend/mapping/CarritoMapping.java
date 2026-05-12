@@ -3,6 +3,13 @@ package com.JaimeAmuedoJAH.backend.mapping;
 import com.JaimeAmuedoJAH.backend.entity.ProductoEntity;
 import com.JaimeAmuedoJAH.backend.mapping.ProductoMapping;
 import com.JaimeAmuedoJAH.backend.dto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.CarritoResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.CarritoItemResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.CarritoRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.CarritoItemRequestDTO;
+import com.JaimeAmuedoJAH.backend.entity.CarritoEntity;
+import com.JaimeAmuedoJAH.backend.entity.CarritoItemEntity;
+import com.JaimeAmuedoJAH.backend.repository.ProductoRepository;
 
 import java.util.Collections;
 import java.util.List;

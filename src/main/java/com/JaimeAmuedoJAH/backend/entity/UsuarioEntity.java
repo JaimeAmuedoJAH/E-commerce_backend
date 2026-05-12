@@ -6,11 +6,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "usuario")
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioEntity {
 
@@ -32,7 +34,4 @@ public class UsuarioEntity {
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TarjetaEntity> tarjetas;
-
-    public UsuarioEntity() {
-    }
 }

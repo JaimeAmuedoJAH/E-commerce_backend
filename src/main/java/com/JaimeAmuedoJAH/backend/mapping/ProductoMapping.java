@@ -3,7 +3,9 @@ package com.JaimeAmuedoJAH.backend.mapping;
 import com.JaimeAmuedoJAH.backend.dto.ProductoResponseDTO;
 import com.JaimeAmuedoJAH.backend.dto.ProductoRequestDTO;
 import com.JaimeAmuedoJAH.backend.entity.CategoriaEntity;
-import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.entity.ProductoEntity;
+import com.JaimeAmuedoJAH.backend.repository.CategoriaRepository;
 
 public class ProductoMapping {
 

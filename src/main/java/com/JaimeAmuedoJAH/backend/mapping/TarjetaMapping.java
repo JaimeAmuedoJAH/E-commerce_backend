@@ -1,6 +1,9 @@
 package com.JaimeAmuedoJAH.backend.mapping;
 
-import com.JaimeAmuedoJAH.backend.usuario.UsuarioEntity;
+import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
+import com.JaimeAmuedoJAH.backend.entity.TarjetaEntity;
+import com.JaimeAmuedoJAH.backend.dto.TarjetaRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.TarjetaResponseDTO;
 
 public class TarjetaMapping {
 

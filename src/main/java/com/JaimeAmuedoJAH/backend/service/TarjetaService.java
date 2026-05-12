@@ -2,8 +2,13 @@ package com.JaimeAmuedoJAH.backend.service;
 
 import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
 import com.JaimeAmuedoJAH.backend.repository.UsuarioRepository;
-import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
-import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.repository.TarjetaRepository;
+import com.JaimeAmuedoJAH.backend.entity.TarjetaEntity;
+import com.JaimeAmuedoJAH.backend.dto.TarjetaRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.TarjetaResponseDTO;
+import com.JaimeAmuedoJAH.backend.mapping.TarjetaMapping;
+import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

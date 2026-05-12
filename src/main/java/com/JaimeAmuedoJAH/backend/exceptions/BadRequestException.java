@@ -1,4 +1,4 @@
-package com.JaimeAmuedoJAH.backend.exception;
+package com.JaimeAmuedoJAH.backend.exceptions;
 
 public class BadRequestException extends RuntimeException {
 

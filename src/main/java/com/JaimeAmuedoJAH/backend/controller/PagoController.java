@@ -4,6 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.JaimeAmuedoJAH.backend.dto.PagoRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.PagoResponseDTO;
+import com.JaimeAmuedoJAH.backend.service.PagoService;
 
 @RestController
 @RequestMapping("/pagos")

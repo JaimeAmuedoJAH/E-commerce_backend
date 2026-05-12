@@ -2,13 +2,17 @@ package com.JaimeAmuedoJAH.backend.service;
 
 import com.JaimeAmuedoJAH.backend.entity.CategoriaEntity;
 import com.JaimeAmuedoJAH.backend.repository.CategoriaRepository;
-import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
-import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
 import com.JaimeAmuedoJAH.backend.dto.ProductoRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.entity.ProductoEntity;
+import com.JaimeAmuedoJAH.backend.mapping.ProductoMapping;
+import com.JaimeAmuedoJAH.backend.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class ProductoService {
 
     private final ProductoRepository productoRepository;

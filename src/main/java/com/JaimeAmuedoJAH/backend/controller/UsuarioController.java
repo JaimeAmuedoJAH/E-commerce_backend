@@ -6,6 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioLoginRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioLoginResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioUpdateRequestDTO;
+import com.JaimeAmuedoJAH.backend.service.UsuarioService;
 
 import java.util.List;
 

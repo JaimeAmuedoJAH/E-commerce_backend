@@ -1,8 +1,10 @@
 package com.JaimeAmuedoJAH.backend.service;
 
-import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
 import com.JaimeAmuedoJAH.backend.entity.TarjetaEntity;
 import com.JaimeAmuedoJAH.backend.service.TarjetaService;
+import com.JaimeAmuedoJAH.backend.dto.PagoRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.PagoResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

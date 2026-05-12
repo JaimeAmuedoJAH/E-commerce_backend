@@ -1,6 +1,6 @@
 package com.JaimeAmuedoJAH.backend.dto;
 
-import com.JaimeAmuedoJAH.backend.producto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.ProductoResponseDTO;
 import lombok.Data;
 
 @Data
