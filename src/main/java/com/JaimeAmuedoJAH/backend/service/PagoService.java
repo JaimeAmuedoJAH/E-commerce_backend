@@ -1,8 +1,11 @@
 package com.JaimeAmuedoJAH.backend.service;
 
-import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exceptions.PaymentException;
 import com.JaimeAmuedoJAH.backend.entity.TarjetaEntity;
 import com.JaimeAmuedoJAH.backend.service.TarjetaService;
+import com.JaimeAmuedoJAH.backend.security.CVVValidationService;
+import com.JaimeAmuedoJAH.backend.dto.PagoRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.PagoResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,7 @@ import java.util.UUID;
 public class PagoService {
 
     private final TarjetaService tarjetaService;
+    private final CVVValidationService cvvValidationService;
 
     public PagoResponseDTO procesarPago(PagoRequestDTO request) {
         validarFormatoTarjeta(request);
@@ -23,8 +27,8 @@ public class PagoService {
                 request.getNumeroTarjeta().replaceAll("\\s", "")
         );
 
-        // Verificar CVV y fecha
-        if (!tarjeta.getCvv().equals(request.getCvv())) {
+        // Verificar CVV usando hash comparison (no exposing CVV)
+        if (!cvvValidationService.validateCVV(request.getCvv(), tarjeta.getCvv())) {
             return PagoResponseDTO.builder()
                     .exitoso(false)
                     .mensaje("CVV incorrecto.")
@@ -68,13 +72,13 @@ public class PagoService {
     private void validarFormatoTarjeta(PagoRequestDTO request) {
         String numero = request.getNumeroTarjeta().replaceAll("\\s", "");
         if (numero.length() != 16 || !numero.matches("\\d+")) {
-            throw new BadRequestException("El número de tarjeta debe tener 16 dígitos");
+            throw new PaymentException("El número de tarjeta debe tener 16 dígitos");
         }
         if (!request.getCvv().matches("\\d{3,4}")) {
-            throw new BadRequestException("El CVV debe tener 3 o 4 dígitos");
+            throw new PaymentException("El CVV debe tener 3 o 4 dígitos");
         }
         if (!request.getFechaExpiracion().matches("(0[1-9]|1[0-2])/\\d{2}")) {
-            throw new BadRequestException("La fecha de expiración debe tener formato MM/AA");
+            throw new PaymentException("La fecha de expiración debe tener formato MM/AA");
         }
     }
 }

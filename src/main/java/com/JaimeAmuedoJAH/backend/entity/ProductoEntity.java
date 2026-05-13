@@ -5,14 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "producto")
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class ProductoEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,9 +23,7 @@ public class ProductoEntity {
     private String nombre;
 
     private String talla;
-
     private String color;
-
     private String descripcion;
 
     @Column(nullable = false)
@@ -37,7 +37,4 @@ public class ProductoEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id", nullable = false)
     private CategoriaEntity categoria;
-
-    public ProductoEntity() {
-    }
 }

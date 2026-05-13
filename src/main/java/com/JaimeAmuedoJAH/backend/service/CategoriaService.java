@@ -1,6 +1,12 @@
 package com.JaimeAmuedoJAH.backend.service;
 
-import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.repository.CategoriaRepository;
+import com.JaimeAmuedoJAH.backend.entity.CategoriaEntity;
+import com.JaimeAmuedoJAH.backend.dto.CategoriaRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.CategoriaResponseDTO;
+import com.JaimeAmuedoJAH.backend.mapping.CategoriaMapping;
+import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;

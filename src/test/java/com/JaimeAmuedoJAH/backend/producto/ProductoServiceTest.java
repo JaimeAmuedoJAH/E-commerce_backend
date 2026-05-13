@@ -1,11 +1,14 @@
 package com.JaimeAmuedoJAH.backend.producto;
 
-import com.JaimeAmuedoJAH.backend.categoria.CategoriaEntity;
-import com.JaimeAmuedoJAH.backend.categoria.CategoriaRepository;
-import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
-import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
-import com.JaimeAmuedoJAH.backend.producto.ProductoRequestDTO;
-import com.JaimeAmuedoJAH.backend.producto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.entity.CategoriaEntity;
+import com.JaimeAmuedoJAH.backend.repository.CategoriaRepository;
+import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.dto.ProductoRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.repository.ProductoRepository;
+import com.JaimeAmuedoJAH.backend.service.ProductoService;
+import com.JaimeAmuedoJAH.backend.entity.ProductoEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

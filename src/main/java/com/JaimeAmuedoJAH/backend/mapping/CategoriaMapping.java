@@ -2,6 +2,9 @@ package com.JaimeAmuedoJAH.backend.mapping;
 
 import com.JaimeAmuedoJAH.backend.mapping.ProductoMapping;
 import com.JaimeAmuedoJAH.backend.dto.ProductoResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.CategoriaResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.CategoriaRequestDTO;
+import com.JaimeAmuedoJAH.backend.entity.CategoriaEntity;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

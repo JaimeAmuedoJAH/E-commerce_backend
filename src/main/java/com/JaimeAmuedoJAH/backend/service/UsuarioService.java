@@ -1,7 +1,16 @@
 package com.JaimeAmuedoJAH.backend.service;
 
-import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
-import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exceptions.AuthenticationException;
+import com.JaimeAmuedoJAH.backend.exceptions.ConflictException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
+import com.JaimeAmuedoJAH.backend.repository.UsuarioRepository;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioLoginRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioLoginResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioUpdateRequestDTO;
+import com.JaimeAmuedoJAH.backend.mapping.UsuarioMapping;
 import com.JaimeAmuedoJAH.backend.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,7 +45,7 @@ public class UsuarioService {
 
     public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO request) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Ya existe un usuario con este email");
+            throw new ConflictException("Ya existe un usuario con este email");
         }
 
         UsuarioEntity usuario = UsuarioMapping.toEntity(request);
@@ -47,10 +56,10 @@ public class UsuarioService {
 
     public UsuarioLoginResponseDTO login(UsuarioLoginRequestDTO loginRequest) {
         UsuarioEntity usuario = usuarioRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new BadRequestException("Credenciales inválidas"));
+                .orElseThrow(() -> new AuthenticationException("Credenciales inválidas"));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), usuario.getPassword())) {
-            throw new BadRequestException("Credenciales inválidas");
+            throw new AuthenticationException("Credenciales inválidas");
         }
 
         String token = jwtUtil.generateToken(usuario.getEmail());
@@ -63,7 +72,7 @@ public class UsuarioService {
 
         if (request.getEmail() != null && !request.getEmail().equals(usuario.getEmail())
                 && usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Ya existe un usuario con este email");
+            throw new ConflictException("Ya existe un usuario con este email");
         }
 
         UsuarioMapping.updateEntity(request, usuario);

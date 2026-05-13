@@ -1,8 +1,10 @@
-package com.JaimeAmuedoJAH.backend.exception;
+package com.JaimeAmuedoJAH.backend.exceptions;
 
-public class OutOfStockException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class OutOfStockException extends ApiException {
 
     public OutOfStockException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }

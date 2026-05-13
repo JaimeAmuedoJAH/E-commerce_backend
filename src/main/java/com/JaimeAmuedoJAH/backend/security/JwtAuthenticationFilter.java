@@ -1,6 +1,7 @@
 package com.JaimeAmuedoJAH.backend.security;
 
-import com.JaimeAmuedoJAH.backend.usuario.UsuarioRepository;
+import com.JaimeAmuedoJAH.backend.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import java.util.Optional;
 
 import java.io.IOException;
 

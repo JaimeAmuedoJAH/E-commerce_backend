@@ -1,6 +1,7 @@
 package com.JaimeAmuedoJAH.backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.JaimeAmuedoJAH.backend.entity.OrdenEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;

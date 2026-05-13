@@ -2,8 +2,13 @@ package com.JaimeAmuedoJAH.backend.service;
 
 import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
 import com.JaimeAmuedoJAH.backend.repository.UsuarioRepository;
-import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
-import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.repository.TarjetaRepository;
+import com.JaimeAmuedoJAH.backend.entity.TarjetaEntity;
+import com.JaimeAmuedoJAH.backend.dto.TarjetaRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.TarjetaResponseDTO;
+import com.JaimeAmuedoJAH.backend.mapping.TarjetaMapping;
+import com.JaimeAmuedoJAH.backend.exceptions.ConflictException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +26,7 @@ public class TarjetaService {
 
     public TarjetaResponseDTO crearTarjeta(TarjetaRequestDTO request) {
         tarjetaRepository.findByNumeroTarjeta(request.getNumeroTarjeta())
-                .ifPresent(t -> { throw new BadRequestException("Ya existe una tarjeta con ese número"); });
+                .ifPresent(t -> { throw new ConflictException("Ya existe una tarjeta con ese número"); });
 
         UsuarioEntity usuario = usuarioRepository.findById(request.getClienteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id " + request.getClienteId()));

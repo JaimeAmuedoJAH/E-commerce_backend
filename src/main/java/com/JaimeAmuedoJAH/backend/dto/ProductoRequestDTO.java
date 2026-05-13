@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.PositiveOrZero;
+import com.JaimeAmuedoJAH.backend.validation.ValidPrice;
+import com.JaimeAmuedoJAH.backend.validation.ValidStock;
 
 /**
  * DTO para solicitud de creación o actualización de producto.
@@ -27,13 +29,13 @@ public class ProductoRequestDTO {
     private String descripcion;
 
     @NotNull(message = "El precio no puede ser nulo")
-    @Positive(message = "El precio debe ser mayor que 0")
+    @ValidPrice
     private Double precio;
 
     private String imagen;
 
     @NotNull(message = "El stock no puede ser nulo")
-    @PositiveOrZero(message = "El stock no puede ser negativo")
+    @ValidStock
     private Integer stock;
 
     @NotNull(message = "El ID de la categoría no puede ser nulo")

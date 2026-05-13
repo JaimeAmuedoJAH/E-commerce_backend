@@ -1,11 +1,18 @@
 package com.JaimeAmuedoJAH.backend.controller;
 
-import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.JaimeAmuedoJAH.backend.dto.CategoriaRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.CategoriaResponseDTO;
+import com.JaimeAmuedoJAH.backend.service.CategoriaService;
+import com.JaimeAmuedoJAH.backend.entity.CategoriaEntity;
+import com.JaimeAmuedoJAH.backend.repository.CategoriaRepository;
+import com.JaimeAmuedoJAH.backend.mapping.CategoriaMapping;
+import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
 
 @RestController
 @RequestMapping("/categorias")

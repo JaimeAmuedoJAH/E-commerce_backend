@@ -1,7 +1,14 @@
 package com.JaimeAmuedoJAH.backend.usuario;
 
-import com.JaimeAmuedoJAH.backend.exception.BadRequestException;
-import com.JaimeAmuedoJAH.backend.exception.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.repository.UsuarioRepository;
+import com.JaimeAmuedoJAH.backend.service.UsuarioService;
+import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioLoginRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioLoginResponseDTO;
 import com.JaimeAmuedoJAH.backend.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

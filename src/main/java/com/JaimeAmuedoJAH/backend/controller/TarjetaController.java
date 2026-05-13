@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.JaimeAmuedoJAH.backend.dto.TarjetaRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.TarjetaResponseDTO;
+import com.JaimeAmuedoJAH.backend.service.TarjetaService;
 
 import java.util.List;
 

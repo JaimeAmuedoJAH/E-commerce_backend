@@ -7,6 +7,8 @@ import com.JaimeAmuedoJAH.backend.dto.OrdenItemResponseDTO;
 import com.JaimeAmuedoJAH.backend.entity.ProductoEntity;
 import com.JaimeAmuedoJAH.backend.mapping.ProductoMapping;
 import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
+import com.JaimeAmuedoJAH.backend.entity.OrdenEntity;
+import com.JaimeAmuedoJAH.backend.entity.OrdenItemEntity;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

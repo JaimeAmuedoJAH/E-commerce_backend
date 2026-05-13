@@ -1,5 +1,11 @@
 package com.JaimeAmuedoJAH.backend.mapping;
 
+import com.JaimeAmuedoJAH.backend.dto.UsuarioLoginResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioRequestDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioResponseDTO;
+import com.JaimeAmuedoJAH.backend.dto.UsuarioUpdateRequestDTO;
+import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
+
 public class UsuarioMapping {
 
     public static UsuarioResponseDTO toResponseDTO(UsuarioEntity usuario) {
