@@ -2,6 +2,8 @@ package com.JaimeAmuedoJAH.backend.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import com.JaimeAmuedoJAH.backend.validation.ValidCardNumber;
+import com.JaimeAmuedoJAH.backend.validation.ValidExpirationDate;
 
 @Data
 public class TarjetaRequestDTO {
@@ -10,13 +12,14 @@ public class TarjetaRequestDTO {
     private Long clienteId;
 
     @NotBlank(message = "El número de tarjeta no puede estar vacío")
-    @Size(min = 16, max = 16, message = "El número de tarjeta debe tener 16 dígitos")
+    @ValidCardNumber
     private String numeroTarjeta;
 
     @NotBlank(message = "El titular no puede estar vacío")
     private String titular;
 
     @NotBlank(message = "La fecha de expiración no puede estar vacía")
+    @ValidExpirationDate
     private String fechaExpiracion;
 
     @NotBlank(message = "El CVV no puede estar vacío")

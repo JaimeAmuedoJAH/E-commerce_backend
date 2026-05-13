@@ -29,6 +29,7 @@ src/main/resources/application-prod.properties
 .env
 *.env
 secrets.properties
+exceptions.agent.md
 
 # Logs
 *.log

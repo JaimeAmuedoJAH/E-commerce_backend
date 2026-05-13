@@ -1,6 +1,7 @@
 package com.JaimeAmuedoJAH.backend.service;
 
-import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exceptions.AuthenticationException;
+import com.JaimeAmuedoJAH.backend.exceptions.ConflictException;
 import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
 import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
 import com.JaimeAmuedoJAH.backend.repository.UsuarioRepository;
@@ -44,7 +45,7 @@ public class UsuarioService {
 
     public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO request) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Ya existe un usuario con este email");
+            throw new ConflictException("Ya existe un usuario con este email");
         }
 
         UsuarioEntity usuario = UsuarioMapping.toEntity(request);
@@ -55,10 +56,10 @@ public class UsuarioService {
 
     public UsuarioLoginResponseDTO login(UsuarioLoginRequestDTO loginRequest) {
         UsuarioEntity usuario = usuarioRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new BadRequestException("Credenciales inválidas"));
+                .orElseThrow(() -> new AuthenticationException("Credenciales inválidas"));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), usuario.getPassword())) {
-            throw new BadRequestException("Credenciales inválidas");
+            throw new AuthenticationException("Credenciales inválidas");
         }
 
         String token = jwtUtil.generateToken(usuario.getEmail());
@@ -71,7 +72,7 @@ public class UsuarioService {
 
         if (request.getEmail() != null && !request.getEmail().equals(usuario.getEmail())
                 && usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Ya existe un usuario con este email");
+            throw new ConflictException("Ya existe un usuario con este email");
         }
 
         UsuarioMapping.updateEntity(request, usuario);
