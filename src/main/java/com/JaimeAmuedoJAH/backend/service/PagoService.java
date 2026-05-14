@@ -7,11 +7,13 @@ import com.JaimeAmuedoJAH.backend.security.CVVValidationService;
 import com.JaimeAmuedoJAH.backend.dto.PagoRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.PagoResponseDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -33,6 +35,10 @@ public class PagoService {
 
         // Verificar CVV usando hash comparison (no exposing CVV)
         String hashedCvv = tarjetaRepository.findHashedCvvById(tarjeta.getId());
+        log.info("Hash CVV recuperado: {}", hashedCvv);
+        log.info("CVV introducido: {}", request.getCvv());
+        log.info("Matches: {}", cvvValidationService.validateCVV(request.getCvv(), hashedCvv));
+
         if (!cvvValidationService.validateCVV(request.getCvv(), hashedCvv)) {
             return PagoResponseDTO.builder()
                     .exitoso(false)

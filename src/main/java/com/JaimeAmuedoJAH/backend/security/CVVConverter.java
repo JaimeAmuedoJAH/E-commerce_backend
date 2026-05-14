@@ -17,26 +17,20 @@ public class CVVConverter implements AttributeConverter<String, String> {
 
     private final PasswordEncoder passwordEncoder;
 
-    /**
-     * Convert CVV to hashed database value
-     * CVV is one-way hashed - it cannot be decrypted
-     */
     @Override
     public String convertToDatabaseColumn(String cvv) {
         if (cvv == null || cvv.isEmpty()) {
             return cvv;
         }
+        // Si ya es un hash BCrypt no lo volvemos a hashear
+        if (cvv.startsWith("$2a$") || cvv.startsWith("$2b$") || cvv.startsWith("$2y$")) {
+            return cvv;
+        }
         return passwordEncoder.encode(cvv);
     }
 
-    /**
-     * Note: Cannot convert back from hashed CVV to plaintext
-     * This is intentional for security - CVV should only be used during payment validation
-     */
     @Override
     public String convertToEntityAttribute(String hashedCvv) {
-        // Return null because we cannot decrypt a hashed CVV
-        // This ensures CVV is never accidentally exposed after storage
         return hashedCvv;
     }
 }
