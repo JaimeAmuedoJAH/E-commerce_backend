@@ -2,7 +2,7 @@ package com.JaimeAmuedoJAH.backend.service;
 
 import com.JaimeAmuedoJAH.backend.exceptions.PaymentException;
 import com.JaimeAmuedoJAH.backend.entity.TarjetaEntity;
-import com.JaimeAmuedoJAH.backend.service.TarjetaService;
+import com.JaimeAmuedoJAH.backend.repository.TarjetaRepository;
 import com.JaimeAmuedoJAH.backend.security.CVVValidationService;
 import com.JaimeAmuedoJAH.backend.dto.PagoRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.PagoResponseDTO;
@@ -18,9 +18,13 @@ import java.util.UUID;
 public class PagoService {
 
     private final TarjetaService tarjetaService;
+    private final TarjetaRepository tarjetaRepository;
     private final CVVValidationService cvvValidationService;
+    private final CarritoService carritoService;
 
     public PagoResponseDTO procesarPago(PagoRequestDTO request) {
+        String numeroNormalizado = request.getNumeroTarjeta().replaceAll("[\\s-]", "");
+        request.setNumeroTarjeta(numeroNormalizado);
         validarFormatoTarjeta(request);
 
         TarjetaEntity tarjeta = tarjetaService.obtenerEntidadPorNumero(
@@ -28,7 +32,8 @@ public class PagoService {
         );
 
         // Verificar CVV usando hash comparison (no exposing CVV)
-        if (!cvvValidationService.validateCVV(request.getCvv(), tarjeta.getCvv())) {
+        String hashedCvv = tarjetaRepository.findHashedCvvById(tarjeta.getId());
+        if (!cvvValidationService.validateCVV(request.getCvv(), hashedCvv)) {
             return PagoResponseDTO.builder()
                     .exitoso(false)
                     .mensaje("CVV incorrecto.")
@@ -60,6 +65,9 @@ public class PagoService {
         tarjeta.setSaldo(tarjeta.getSaldo() - request.getMonto());
         tarjetaService.actualizarSaldo(tarjeta);
 
+        // Vaciar el carrito tras pago exitoso
+        carritoService.eliminarCarrito(request.getCarritoId());
+
         return PagoResponseDTO.builder()
                 .exitoso(true)
                 .mensaje("Pago procesado correctamente.")
@@ -70,7 +78,8 @@ public class PagoService {
     }
 
     private void validarFormatoTarjeta(PagoRequestDTO request) {
-        String numero = request.getNumeroTarjeta().replaceAll("\\s", "");
+        String numero = request.getNumeroTarjeta().replaceAll("[\\s-]", "");
+
         if (numero.length() != 16 || !numero.matches("\\d+")) {
             throw new PaymentException("El número de tarjeta debe tener 16 dígitos");
         }

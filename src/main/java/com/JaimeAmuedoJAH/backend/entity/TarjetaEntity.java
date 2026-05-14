@@ -1,15 +1,12 @@
 package com.JaimeAmuedoJAH.backend.entity;
 
-import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
 import com.JaimeAmuedoJAH.backend.security.CardNumberConverter;
 import com.JaimeAmuedoJAH.backend.security.CVVConverter;
-import java.util.List;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tarjeta")
@@ -26,6 +23,10 @@ public class TarjetaEntity {
     @Column(name = "numero_tarjeta", nullable = false, unique = true, length = 256)
     @Convert(converter = CardNumberConverter.class)
     private String numeroTarjeta;
+
+    // ✅ Hash SHA-256 del número plano, para búsquedas eficientes
+    @Column(name = "numero_hash", nullable = false, unique = true, length = 256)
+    private String numeroHash;
 
     @Column(name = "titular", nullable = false)
     private String titular;

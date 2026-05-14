@@ -9,6 +9,7 @@ import com.JaimeAmuedoJAH.backend.dto.TarjetaResponseDTO;
 import com.JaimeAmuedoJAH.backend.mapping.TarjetaMapping;
 import com.JaimeAmuedoJAH.backend.exceptions.ConflictException;
 import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.security.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +24,19 @@ public class TarjetaService {
 
     private final TarjetaRepository tarjetaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final EncryptionUtil encryptionUtil; // ✅ Añadido
 
     public TarjetaResponseDTO crearTarjeta(TarjetaRequestDTO request) {
-        tarjetaRepository.findByNumeroTarjeta(request.getNumeroTarjeta())
+        // ✅ Buscar duplicado por hash
+        String hash = encryptionUtil.hashForSearch(request.getNumeroTarjeta());
+        tarjetaRepository.findByNumeroHash(hash)
                 .ifPresent(t -> { throw new ConflictException("Ya existe una tarjeta con ese número"); });
 
         UsuarioEntity usuario = usuarioRepository.findById(request.getClienteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id " + request.getClienteId()));
 
         TarjetaEntity tarjeta = TarjetaMapping.toEntity(request, usuario);
+        tarjeta.setNumeroHash(hash); // ✅ Guardar el hash
         return TarjetaMapping.toResponseDTO(tarjetaRepository.save(tarjeta));
     }
 
@@ -58,7 +63,9 @@ public class TarjetaService {
     }
 
     public TarjetaEntity obtenerEntidadPorNumero(String numeroTarjeta) {
-        return tarjetaRepository.findByNumeroTarjeta(numeroTarjeta)
+        // ✅ Buscar por hash en lugar de por número plano
+        String hash = encryptionUtil.hashForSearch(numeroTarjeta);
+        return tarjetaRepository.findByNumeroHash(hash)
                 .orElseThrow(() -> new ResourceNotFoundException("Tarjeta no encontrada"));
     }
 

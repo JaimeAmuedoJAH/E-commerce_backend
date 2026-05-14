@@ -37,6 +37,6 @@ public class CVVConverter implements AttributeConverter<String, String> {
     public String convertToEntityAttribute(String hashedCvv) {
         // Return null because we cannot decrypt a hashed CVV
         // This ensures CVV is never accidentally exposed after storage
-        return null;
+        return hashedCvv;
     }
 }

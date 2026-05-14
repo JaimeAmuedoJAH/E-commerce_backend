@@ -22,10 +22,18 @@ public class TarjetaMapping {
         TarjetaResponseDTO dto = new TarjetaResponseDTO();
         dto.setId(entity.getId());
         dto.setClienteId(entity.getUsuario().getId());
-        dto.setNumeroTarjeta(entity.getNumeroTarjeta());
+        dto.setNumeroTarjeta(maskCardNumber(entity.getNumeroTarjeta()));
         dto.setTitular(entity.getTitular());
         dto.setFechaExpiracion(entity.getFechaExpiracion());
         dto.setSaldo(entity.getSaldo());
         return dto;
+    }
+
+    private static String maskCardNumber(String cardNumber) {
+        if (cardNumber == null || cardNumber.length() < 4) {
+            return cardNumber;
+        }
+        String lastFourDigits = cardNumber.substring(cardNumber.length() - 4);
+        return "****-****-****-" + lastFourDigits;
     }
 }
