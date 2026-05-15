@@ -2,7 +2,10 @@ package com.JaimeAmuedoJAH.backend.service;
 
 import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
 import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.exceptions.CancellationPeriodExpiredException;
 import com.JaimeAmuedoJAH.backend.dto.OrdenItemRequestDTO;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import com.JaimeAmuedoJAH.backend.entity.ProductoEntity;
 import com.JaimeAmuedoJAH.backend.repository.ProductoRepository;
 import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
@@ -16,12 +19,16 @@ import com.JaimeAmuedoJAH.backend.mapping.OrdenMapping;
 import com.JaimeAmuedoJAH.backend.repository.OrdenRepository;
 import com.JaimeAmuedoJAH.backend.repository.UsuarioRepository;
 import com.JaimeAmuedoJAH.backend.repository.ProductoRepository;
+import com.JaimeAmuedoJAH.backend.repository.PagoRepository;
 import com.JaimeAmuedoJAH.backend.entity.OrdenEntity;
 import com.JaimeAmuedoJAH.backend.entity.OrdenItemEntity;
 import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
 import com.JaimeAmuedoJAH.backend.entity.ProductoEntity;
 import com.JaimeAmuedoJAH.backend.dto.OrdenRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.OrdenResponseDTO;
+import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
+import com.JaimeAmuedoJAH.backend.mapping.OrdenMapping;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +41,14 @@ import java.util.stream.Collectors;
 @Transactional
 public class OrdenService {
 
+    // Período máximo para cancelación en días
+    private static final int DIAS_CANCELACION_PERMITIDA = 15;
+
     private final OrdenRepository ordenRepository;
     private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
+    private final PagoRepository pagoRepository;
+    private final PagoService pagoService;
 
     /**
      * Obtener todas las órdenes
@@ -157,13 +169,23 @@ public class OrdenService {
     }
 
     /**
-     * Cancelar una orden
+     * Cancelar una orden con reembolso automático
      */
     public OrdenResponseDTO cancelarOrden(Long id) {
         OrdenEntity orden = ordenRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Orden not found with id " + id));
 
+        // Validar período de cancelación (15 días máximo)
+        long diasDesdeCreacion = ChronoUnit.DAYS.between(
+                orden.getFechaCreacion(), LocalDateTime.now());
+        if (diasDesdeCreacion > DIAS_CANCELACION_PERMITIDA) {
+            throw new CancellationPeriodExpiredException(
+                    "No se puede cancelar la orden. Han pasado más de " +
+                    DIAS_CANCELACION_PERMITIDA + " días desde su creación");
+        }
+
+        // Validar estado
         if (orden.getEstado() == OrdenEntity.EstadoOrden.CANCELADA) {
             throw new BadRequestException("La orden ya está cancelada");
         }
@@ -179,6 +201,10 @@ public class OrdenService {
             productoRepository.save(producto);
         }
 
+        // Procesar reembolso del pago original
+        pagoService.procesarReembolso(orden);
+
+        // Cambiar estado
         orden.setEstado(OrdenEntity.EstadoOrden.CANCELADA);
         OrdenEntity cancelledOrden = ordenRepository.save(orden);
 

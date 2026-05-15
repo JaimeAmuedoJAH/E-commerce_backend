@@ -2,7 +2,11 @@ package com.JaimeAmuedoJAH.backend.service;
 
 import com.JaimeAmuedoJAH.backend.exceptions.PaymentException;
 import com.JaimeAmuedoJAH.backend.entity.TarjetaEntity;
+import com.JaimeAmuedoJAH.backend.entity.PagoEntity;
+import com.JaimeAmuedoJAH.backend.entity.OrdenEntity;
 import com.JaimeAmuedoJAH.backend.repository.TarjetaRepository;
+import com.JaimeAmuedoJAH.backend.repository.PagoRepository;
+import com.JaimeAmuedoJAH.backend.repository.OrdenRepository;
 import com.JaimeAmuedoJAH.backend.security.CVVValidationService;
 import com.JaimeAmuedoJAH.backend.dto.PagoRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.PagoResponseDTO;
@@ -23,6 +27,8 @@ public class PagoService {
     private final TarjetaRepository tarjetaRepository;
     private final CVVValidationService cvvValidationService;
     private final CarritoService carritoService;
+    private final PagoRepository pagoRepository;
+    private final OrdenRepository ordenRepository;
 
     public PagoResponseDTO procesarPago(PagoRequestDTO request) {
         String numeroNormalizado = request.getNumeroTarjeta().replaceAll("[\\s-]", "");
@@ -74,10 +80,12 @@ public class PagoService {
         // Vaciar el carrito tras pago exitoso
         carritoService.eliminarCarrito(request.getCarritoId());
 
+        String codigoTransaccion = UUID.randomUUID().toString().toUpperCase();
+
         return PagoResponseDTO.builder()
                 .exitoso(true)
                 .mensaje("Pago procesado correctamente.")
-                .codigoTransaccion(UUID.randomUUID().toString().toUpperCase())
+                .codigoTransaccion(codigoTransaccion)
                 .carritoId(request.getCarritoId())
                 .clienteId(request.getClienteId())
                 .build();
@@ -95,5 +103,42 @@ public class PagoService {
         if (!request.getFechaExpiracion().matches("(0[1-9]|1[0-2])/\\d{2}")) {
             throw new PaymentException("La fecha de expiración debe tener formato MM/AA");
         }
+    }
+
+    /**
+     * Procesar reembolso de una orden cancelada
+     * Devuelve el dinero a la tarjeta original y registra la transacción
+     */
+    public void procesarReembolso(OrdenEntity orden) {
+        // Obtener pago original completado
+        PagoEntity pagoOriginal = pagoRepository.findByOrdenIdAndEstado(
+                orden.getId(),
+                PagoEntity.EstadoPago.COMPLETADO
+        ).orElse(null);
+
+        if (pagoOriginal == null) {
+            log.warn("No se encontró pago completado para la orden {}", orden.getId());
+            return;
+        }
+
+        // Revertir dinero a la tarjeta original
+        TarjetaEntity tarjeta = pagoOriginal.getTarjeta();
+        tarjeta.setSaldo(tarjeta.getSaldo() + pagoOriginal.getMonto());
+        tarjetaRepository.save(tarjeta);
+
+        // Registrar reembolso
+        PagoEntity reembolso = PagoEntity.builder()
+                .orden(orden)
+                .tarjeta(tarjeta)
+                .monto(pagoOriginal.getMonto())
+                .estado(PagoEntity.EstadoPago.REEMBOLSADO)
+                .codigoTransaccion(UUID.randomUUID().toString().toUpperCase())
+                .descripcion("Reembolso automático por cancelación de orden #" + orden.getId())
+                .build();
+
+        pagoRepository.save(reembolso);
+
+        log.info("Reembolso procesado: {} € devueltos a tarjeta {} para orden {}",
+                pagoOriginal.getMonto(), tarjeta.getId(), orden.getId());
     }
 }

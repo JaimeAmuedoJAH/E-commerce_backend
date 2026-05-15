@@ -44,6 +44,9 @@ public class OrdenEntity {
     @Column(name = "codigo_transaccion")
     private String codigoTransaccion;
 
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PagoEntity> pagos;
+
     @PrePersist
     public void prePersist() {
         if (this.fechaCreacion == null) {
