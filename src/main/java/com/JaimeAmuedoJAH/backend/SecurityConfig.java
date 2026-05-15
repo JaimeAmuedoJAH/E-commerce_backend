@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -25,16 +23,6 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    /**
-     * Bean que configura el codificador de contraseñas usando BCrypt.
-     *
-     * @return PasswordEncoder con BCrypt
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     /**
      * Bean que configura CORS para permitir solicitudes desde diferentes orígenes.
@@ -68,23 +56,16 @@ public class SecurityConfig {
         http.cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests(authz -> authz
-                        // Endpoints públicos
                         .requestMatchers("/usuarios/register").permitAll()
                         .requestMatchers("/usuarios/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        // Swagger/OpenAPI documentación
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        // Todos los demás endpoints requieren autenticación
                         .anyRequest().authenticated()
                 )
-                // Configurar sesiones sin estado (stateless) para JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Permitir acceso a H2 console
                 .headers(headers -> headers.frameOptions().disable())
-                // Desactivar autenticación HTTP básica
                 .httpBasic().disable();
 
-        // Agregar el filtro JWT antes del filtro de autenticación por defecto
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
