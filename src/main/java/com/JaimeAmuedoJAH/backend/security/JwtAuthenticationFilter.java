@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Crea un objeto User de Spring Security con los datos del usuario
                 UserDetails principal = User.withUsername(usuario.getEmail())
                         .password(usuario.getPassword())
-                        .roles(usuario.getRol())  // Asigna el rol como autoridad
+                        .authorities(usuario.getRol())  // Asigna el rol como autoridad
                         .build();
 
                 // Crea un token de autenticación con el usuario y sus autoridades
