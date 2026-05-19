@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.JaimeAmuedoJAH.backend.service.ProductoService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -21,9 +23,10 @@ public class ProductoController {
      * Obtener todos los productos
      */
     @GetMapping("/all")
-    public ResponseEntity<List<ProductoResponseDTO>> obtenerTodosLosProductos() {
-        List<ProductoResponseDTO> productos = productoService.obtenerTodosLosProductos();
-        return ResponseEntity.ok(productos);
+    public ResponseEntity<Page<ProductoResponseDTO>> obtenerTodosLosProductos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size) {
+        return ResponseEntity.ok(productoService.obtenerTodosLosProductos(page, size));
     }
 
     /**
@@ -39,10 +42,11 @@ public class ProductoController {
      * Obtener productos por categoría
      */
     @GetMapping("/categoria/{categoriaId}")
-    public ResponseEntity<List<ProductoResponseDTO>> obtenerProductosPorCategoria(
-            @PathVariable Long categoriaId) {
-        List<ProductoResponseDTO> productos = productoService.obtenerProductosPorCategoria(categoriaId);
-        return ResponseEntity.ok(productos);
+    public ResponseEntity<Page<ProductoResponseDTO>> obtenerProductosPorCategoria(
+            @PathVariable Long categoriaId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size) {
+        return ResponseEntity.ok(productoService.obtenerProductosPorCategoria(categoriaId, page, size));
     }
 
     /**
