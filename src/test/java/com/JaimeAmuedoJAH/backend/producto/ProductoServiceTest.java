@@ -15,6 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,10 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Tests unitarios para ProductoService.
- * Verifica la lógica de negocio de productos.
- */
 @ExtendWith(MockitoExtension.class)
 class ProductoServiceTest {
 
@@ -43,6 +43,11 @@ class ProductoServiceTest {
     private ProductoEntity producto;
     private CategoriaEntity categoria;
     private ProductoRequestDTO productoRequestDTO;
+
+    // Paginación por defecto para los tests
+    private final int PAGE = 0;
+    private final int SIZE = 10;
+    private Pageable pageable;
 
     @BeforeEach
     void setup() {
@@ -62,20 +67,83 @@ class ProductoServiceTest {
         productoRequestDTO.setPrecio(999.99);
         productoRequestDTO.setStock(10);
         productoRequestDTO.setCategoriaId(1L);
+
+        pageable = PageRequest.of(PAGE, SIZE);
     }
 
     /**
-     * Test para verificar que se obtienen todos los productos
+     * Test para verificar que se obtienen todos los productos paginados
      */
     @Test
     void testObtenerTodosLosProductos() {
-        when(productoRepository.findAll()).thenReturn(Arrays.asList(producto));
+        // PageImpl simula la respuesta paginada del repository
+        Page<ProductoEntity> pageProductos = new PageImpl<>(Arrays.asList(producto), pageable, 1);
+        when(productoRepository.findAll(any(Pageable.class))).thenReturn(pageProductos);
 
-        List<ProductoResponseDTO> result = productoService.obtenerTodosLosProductos();
+        Page<ProductoResponseDTO> result = productoService.obtenerTodosLosProductos(PAGE, SIZE);
 
         assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(productoRepository, times(1)).findAll();
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getContent().size());
+        assertEquals(1, result.getTotalPages());
+        verify(productoRepository, times(1)).findAll(any(Pageable.class));
+    }
+
+    /**
+     * Test para verificar paginación con múltiples páginas
+     */
+    @Test
+    void testObtenerTodosLosProductosVariasPaginas() {
+        ProductoEntity producto2 = new ProductoEntity();
+        producto2.setId(2L);
+        producto2.setNombre("Monitor");
+        producto2.setPrecio(299.99);
+        producto2.setStock(5);
+        producto2.setCategoria(categoria);
+
+        // Simulamos que hay 15 productos en total pero solo devolvemos 10 (page 0)
+        Page<ProductoEntity> pageProductos = new PageImpl<>(
+                Arrays.asList(producto, producto2), pageable, 15
+        );
+        when(productoRepository.findAll(any(Pageable.class))).thenReturn(pageProductos);
+
+        Page<ProductoResponseDTO> result = productoService.obtenerTodosLosProductos(PAGE, SIZE);
+
+        assertNotNull(result);
+        assertEquals(15, result.getTotalElements());  // total real
+        assertEquals(2, result.getContent().size());   // en esta página
+        assertEquals(2, result.getTotalPages());        // páginas totales
+        assertFalse(result.isLast());                   // no es la última página
+        verify(productoRepository, times(1)).findAll(any(Pageable.class));
+    }
+
+    /**
+     * Test para verificar que se obtienen productos por categoría paginados
+     */
+    @Test
+    void testObtenerProductosPorCategoria() {
+        Page<ProductoEntity> pageProductos = new PageImpl<>(Arrays.asList(producto), pageable, 1);
+        when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
+        when(productoRepository.findByCategoriaId(eq(1L), any(Pageable.class))).thenReturn(pageProductos);
+
+        Page<ProductoResponseDTO> result = productoService.obtenerProductosPorCategoria(1L, PAGE, SIZE);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getContent().size());
+        verify(productoRepository, times(1)).findByCategoriaId(eq(1L), any(Pageable.class));
+    }
+
+    /**
+     * Test para verificar que se lanza excepción si la categoría no existe
+     */
+    @Test
+    void testObtenerProductosPorCategoriaNoExistente() {
+        when(categoriaRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            productoService.obtenerProductosPorCategoria(999L, PAGE, SIZE);
+        });
     }
 
     /**

@@ -51,22 +51,27 @@ public class SecurityConfig {
      * @param http HttpSecurity para configurar
      * @return SecurityFilterChain configurada
      */
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors().and()
-                .csrf().disable()
-                .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/usuarios/register").permitAll()
-                        .requestMatchers("/usuarios/login").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .headers(headers -> headers.frameOptions().disable())
-                .httpBasic().disable();
+   @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(authz -> authz
+            .requestMatchers("/usuarios/register").permitAll()
+            .requestMatchers("/usuarios/login").permitAll()
+            .requestMatchers("/h2-console/**").permitAll()
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+            .anyRequest().authenticated()
+        )
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
+        .headers(headers -> headers
+            .frameOptions(frameOptions -> frameOptions.disable())
+        )
+        .httpBasic(httpBasic -> httpBasic.disable());
 
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    return http.build();
+}
 }

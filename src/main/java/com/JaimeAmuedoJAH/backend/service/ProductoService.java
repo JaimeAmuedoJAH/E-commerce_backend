@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,15 +34,13 @@ public class ProductoService {
     private final CategoriaRepository categoriaRepository;
 
     /**
-     * Obtener todos los productos
+     * Obtener todos los productos con paginación
      */
-    public List<ProductoResponseDTO> obtenerTodosLosProductos() {
-        log.info("Obteniendo todos los productos");
-        List<ProductoResponseDTO> productos = productoRepository.findAll().stream()
-                .map(ProductoMapping::toResponseDTO)
-                .collect(Collectors.toList());
-        log.debug("Se obtuvieron {} productos", productos.size());
-        return productos;
+    public Page<ProductoResponseDTO> obtenerTodosLosProductos(int page, int size) {
+        log.info("Obteniendo todos los productos - página: {}, tamaño: {}", page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        return productoRepository.findAll(pageable)
+                .map(ProductoMapping::toResponseDTO);
     }
 
     /**
@@ -59,8 +60,9 @@ public class ProductoService {
     /**
      * Obtener productos por categoría
      */
-    public List<ProductoResponseDTO> obtenerProductosPorCategoria(Long categoriaId) {
-        log.info("Obteniendo productos por categoría: {}", categoriaId);
+    public Page<ProductoResponseDTO> obtenerProductosPorCategoria(Long categoriaId, int page, int size) {
+        log.info("Obteniendo productos por categoría: {} - página: {}, tamaño: {}", categoriaId, page, size);
+        
         // Validar que la categoría existe
         categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> {
@@ -69,10 +71,11 @@ public class ProductoService {
                             "Categoria not found with id " + categoriaId);
                 });
 
-        List<ProductoResponseDTO> productos = productoRepository.findByCategoriaId(categoriaId).stream()
-                .map(ProductoMapping::toResponseDTO)
-                .collect(Collectors.toList());
-        log.debug("Se obtuvieron {} productos para categoría {}", productos.size(), categoriaId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductoResponseDTO> productos = productoRepository.findByCategoriaId(categoriaId, pageable)
+                .map(ProductoMapping::toResponseDTO);
+        
+        log.debug("Se obtuvieron {} productos para categoría {}", productos.getTotalElements(), categoriaId);
         return productos;
     }
 
