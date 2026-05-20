@@ -29,9 +29,9 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> obtenerUsuarioPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(id));
+    @GetMapping("/{publicId}")
+    public ResponseEntity<UsuarioResponseDTO> obtenerUsuarioPorId(@PathVariable String publicId) {
+        return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(publicId));
     }
 
     @PostMapping("/register")
@@ -48,16 +48,16 @@ public class UsuarioController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{publicId}")
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(
-            @PathVariable Long id,
+            @PathVariable String publicId,
             @Valid @RequestBody UsuarioUpdateRequestDTO usuarioRequest) {
-        return ResponseEntity.ok(usuarioService.actualizarUsuario(id, usuarioRequest));
+        return ResponseEntity.ok(usuarioService.actualizarUsuario(publicId, usuarioRequest));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
-        usuarioService.eliminarUsuario(id);
+    @DeleteMapping("/delete/{publicId}")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable String publicId) {
+        usuarioService.eliminarUsuario(publicId);
         return ResponseEntity.noContent().build();
     }
 }

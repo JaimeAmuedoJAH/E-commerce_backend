@@ -1,6 +1,7 @@
 package com.JaimeAmuedoJAH.backend.usuario;
 
-import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
+import com.JaimeAmuedoJAH.backend.exceptions.AuthenticationException;
+import com.JaimeAmuedoJAH.backend.exceptions.ConflictException;
 import com.JaimeAmuedoJAH.backend.exceptions.ResourceNotFoundException;
 import com.JaimeAmuedoJAH.backend.repository.UsuarioRepository;
 import com.JaimeAmuedoJAH.backend.service.UsuarioService;
@@ -21,16 +22,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-/**
- * Tests unitarios para UsuarioService.
- * Verifica la lógica de negocio de autenticación y gestión de usuarios.
- */
 @ExtendWith(MockitoExtension.class)
 class UsuarioServiceTest {
 
@@ -48,15 +45,19 @@ class UsuarioServiceTest {
 
     private UsuarioEntity usuario;
     private UsuarioRequestDTO usuarioRequestDTO;
+    private String publicId;
 
     @BeforeEach
     void setup() {
-        usuario = new UsuarioEntity();
-        usuario.setId(1L);
-        usuario.setNombre("Juan Pérez");
-        usuario.setEmail("juan@example.com");
-        usuario.setPassword("hashedPassword123");
-        usuario.setRol("ROLE_USER");
+        publicId = UUID.randomUUID().toString();
+
+        usuario = UsuarioEntity.builder()
+                .publicId(publicId)
+                .nombre("Juan Pérez")
+                .email("juan@example.com")
+                .password("hashedPassword123")
+                .rol("ROLE_USER")
+                .build();
 
         usuarioRequestDTO = new UsuarioRequestDTO();
         usuarioRequestDTO.setNombre("Juan Pérez");
@@ -65,9 +66,6 @@ class UsuarioServiceTest {
         usuarioRequestDTO.setRol("ROLE_USER");
     }
 
-    /**
-     * Test para verificar que se obtienen todos los usuarios
-     */
     @Test
     void testObtenerTodosLosUsuarios() {
         when(usuarioRepository.findAll()).thenReturn(Arrays.asList(usuario));
@@ -79,34 +77,26 @@ class UsuarioServiceTest {
         verify(usuarioRepository, times(1)).findAll();
     }
 
-    /**
-     * Test para verificar la obtención de un usuario por ID existente
-     */
     @Test
     void testObtenerUsuarioPorIdExistente() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByPublicId(publicId)).thenReturn(Optional.of(usuario));
 
-        UsuarioResponseDTO result = usuarioService.obtenerUsuarioPorId(1L);
+        UsuarioResponseDTO result = usuarioService.obtenerUsuarioPorId(publicId);
 
         assertNotNull(result);
-        verify(usuarioRepository, times(1)).findById(1L);
+        assertEquals(publicId, result.getPublicId());
+        verify(usuarioRepository, times(1)).findByPublicId(publicId);
     }
 
-    /**
-     * Test para verificar que se lanza excepción cuando usuario no existe
-     */
     @Test
     void testObtenerUsuarioPorIdNoExistente() {
-        when(usuarioRepository.findById(999L)).thenReturn(Optional.empty());
+        String idInexistente = UUID.randomUUID().toString();
+        when(usuarioRepository.findByPublicId(idInexistente)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> {
-            usuarioService.obtenerUsuarioPorId(999L);
-        });
+        assertThrows(ResourceNotFoundException.class, () ->
+                usuarioService.obtenerUsuarioPorId(idInexistente));
     }
 
-    /**
-     * Test para verificar el registro exitoso de un nuevo usuario
-     */
     @Test
     void testCrearUsuarioExitoso() {
         when(usuarioRepository.existsByEmail(usuarioRequestDTO.getEmail())).thenReturn(false);
@@ -119,21 +109,14 @@ class UsuarioServiceTest {
         verify(usuarioRepository, times(1)).save(any(UsuarioEntity.class));
     }
 
-    /**
-     * Test para verificar que no se crea usuario si email ya existe
-     */
     @Test
     void testCrearUsuarioConEmailDuplicado() {
         when(usuarioRepository.existsByEmail(usuarioRequestDTO.getEmail())).thenReturn(true);
 
-        assertThrows(BadRequestException.class, () -> {
-            usuarioService.crearUsuario(usuarioRequestDTO);
-        });
+        assertThrows(ConflictException.class, () ->
+                usuarioService.crearUsuario(usuarioRequestDTO));
     }
 
-    /**
-     * Test para verificar login exitoso
-     */
     @Test
     void testLoginExitoso() {
         UsuarioLoginRequestDTO loginRequest = new UsuarioLoginRequestDTO();
@@ -151,9 +134,6 @@ class UsuarioServiceTest {
         verify(jwtUtil, times(1)).generateToken("juan@example.com");
     }
 
-    /**
-     * Test para verificar que login falla con email incorrecto
-     */
     @Test
     void testLoginConEmailIncorrecto() {
         UsuarioLoginRequestDTO loginRequest = new UsuarioLoginRequestDTO();
@@ -162,14 +142,10 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.findByEmail("inexistente@example.com")).thenReturn(Optional.empty());
 
-        assertThrows(BadRequestException.class, () -> {
-            usuarioService.login(loginRequest);
-        });
+        assertThrows(AuthenticationException.class, () ->
+                usuarioService.login(loginRequest));
     }
 
-    /**
-     * Test para verificar que login falla con contraseña incorrecta
-     */
     @Test
     void testLoginConContraseñaIncorrecta() {
         UsuarioLoginRequestDTO loginRequest = new UsuarioLoginRequestDTO();
@@ -179,32 +155,25 @@ class UsuarioServiceTest {
         when(usuarioRepository.findByEmail("juan@example.com")).thenReturn(Optional.of(usuario));
         when(passwordEncoder.matches("passwordIncorrecto", usuario.getPassword())).thenReturn(false);
 
-        assertThrows(BadRequestException.class, () -> {
-            usuarioService.login(loginRequest);
-        });
+        assertThrows(AuthenticationException.class, () ->
+                usuarioService.login(loginRequest));
     }
 
-    /**
-     * Test para verificar la eliminación de un usuario existente
-     */
     @Test
     void testEliminarUsuarioExistente() {
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByPublicId(publicId)).thenReturn(Optional.of(usuario));
 
-        usuarioService.eliminarUsuario(1L);
+        usuarioService.eliminarUsuario(publicId);
 
         verify(usuarioRepository, times(1)).delete(usuario);
     }
 
-    /**
-     * Test para verificar que no se elimina usuario inexistente
-     */
     @Test
     void testEliminarUsuarioNoExistente() {
-        when(usuarioRepository.findById(999L)).thenReturn(Optional.empty());
+        String idInexistente = UUID.randomUUID().toString();
+        when(usuarioRepository.findByPublicId(idInexistente)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> {
-            usuarioService.eliminarUsuario(999L);
-        });
+        assertThrows(ResourceNotFoundException.class, () ->
+                usuarioService.eliminarUsuario(idInexistente));
     }
 }

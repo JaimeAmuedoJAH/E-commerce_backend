@@ -5,6 +5,7 @@ import com.JaimeAmuedoJAH.backend.dto.UsuarioRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.UsuarioResponseDTO;
 import com.JaimeAmuedoJAH.backend.dto.UsuarioUpdateRequestDTO;
 import com.JaimeAmuedoJAH.backend.entity.UsuarioEntity;
+import java.util.UUID;
 
 public class UsuarioMapping {
 
@@ -13,12 +14,12 @@ public class UsuarioMapping {
             return null;
         }
 
-        UsuarioResponseDTO response = new UsuarioResponseDTO();
-        response.setId(usuario.getId());
-        response.setNombre(usuario.getNombre());
-        response.setEmail(usuario.getEmail());
-        response.setRol(usuario.getRol());
-        return response;
+        UsuarioResponseDTO dto = new UsuarioResponseDTO();
+        dto.setPublicId(usuario.getPublicId());
+        dto.setNombre(usuario.getNombre());
+        dto.setEmail(usuario.getEmail());
+        dto.setRol(usuario.getRol());
+        return dto;
     }
 
     public static UsuarioEntity toEntity(UsuarioRequestDTO request) {
@@ -26,13 +27,12 @@ public class UsuarioMapping {
             return null;
         }
 
-        UsuarioEntity usuario = UsuarioEntity.builder()
-                .nombre(request.getNombre())
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .rol(request.getRol() != null ? request.getRol() : "USER")
-                .build();
-        return usuario;
+        return UsuarioEntity.builder()
+            .publicId(UUID.randomUUID().toString()) // se genera aquí
+            .nombre(request.getNombre())
+            .email(request.getEmail())
+            .rol(request.getRol())
+            .build();
     }
 
     public static UsuarioLoginResponseDTO toLoginResponseDTO(UsuarioEntity usuario, String token) {
