@@ -44,8 +44,8 @@ public class CarritoService {
     }
 
     @Transactional(readOnly = true)
-    public List<CarritoResponseDTO> obtenerCarritosPorCliente(Long clienteId) {
-        List<CarritoEntity> carritos = carritoRepository.findByClienteId(clienteId);
+    public List<CarritoResponseDTO> obtenerCarritosPorCliente(String clientePublicId) {  // era Long
+        List<CarritoEntity> carritos = carritoRepository.findByClientePublicId(clientePublicId);
         return carritos.stream()
                 .map(this::mapearCarritoConProductos)
                 .collect(Collectors.toList());
@@ -60,27 +60,24 @@ public class CarritoService {
     }
 
     public CarritoResponseDTO actualizarCarrito(Long id, CarritoRequestDTO request) {
-    validarRequest(request);
+        validarRequest(request);
 
-    CarritoEntity carrito = carritoRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Carrito not found with id " + id));
+        CarritoEntity carrito = carritoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito not found with id " + id));
 
-    carrito.setClienteId(request.getClienteId());
-    
-    // Limpiar la lista existente sin reemplazarla
-    carrito.getItems().clear();
-    carritoRepository.saveAndFlush(carrito); // flush para que se aplique el clear
-    
-    // Añadir los nuevos items a la misma lista
-    List<CarritoItemEntity> nuevosItems = request.getItems().stream()
-            .map(CarritoMapping::toItemEntity)
-            .collect(Collectors.toList());
-    nuevosItems.forEach(item -> item.setCarrito(carrito));
-    carrito.getItems().addAll(nuevosItems);
+        carrito.setClientePublicId(request.getClientePublicId());  // cambiado
 
-    CarritoEntity updated = carritoRepository.save(carrito);
-    return mapearCarritoConProductos(updated);
-}
+        carrito.getItems().clear();
+        carritoRepository.saveAndFlush(carrito);
+
+        List<CarritoItemEntity> nuevosItems = request.getItems().stream()
+                .map(CarritoMapping::toItemEntity)
+                .collect(Collectors.toList());
+        nuevosItems.forEach(item -> item.setCarrito(carrito));
+        carrito.getItems().addAll(nuevosItems);
+
+        return mapearCarritoConProductos(carritoRepository.save(carrito));
+    }
 
     public void eliminarCarrito(Long id) {
         CarritoEntity carrito = carritoRepository.findById(id)

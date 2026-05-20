@@ -8,7 +8,7 @@ import java.util.List;
 public class CarritoResponseDTO {
 
     private Long id;
-    private Long clienteId;
+    private String clientePublicId;  // era: Long clienteId
     private List<CarritoItemResponseDTO> items;
     private Integer totalItems;
 }

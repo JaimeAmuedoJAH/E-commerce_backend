@@ -23,9 +23,10 @@ public class TarjetaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(tarjetaService.crearTarjeta(request));
     }
 
-    @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<TarjetaResponseDTO>> obtenerTarjetasPorCliente(@PathVariable Long clienteId) {
-        return ResponseEntity.ok(tarjetaService.obtenerTarjetasPorCliente(clienteId));
+    @GetMapping("/cliente/{clientePublicId}")
+    public ResponseEntity<List<TarjetaResponseDTO>> obtenerTarjetasPorCliente(
+            @PathVariable String clientePublicId) {  // era: Long clienteId
+        return ResponseEntity.ok(tarjetaService.obtenerTarjetasPorCliente(clientePublicId));
     }
 
     @GetMapping("/{id}")

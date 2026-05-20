@@ -6,5 +6,5 @@ import com.JaimeAmuedoJAH.backend.entity.CarritoEntity;
 
 public interface CarritoRepository extends JpaRepository<CarritoEntity, Long> {
 
-    List<CarritoEntity> findByClienteId(Long clienteId);
+    List<CarritoEntity> findByClientePublicId(String clientePublicId);
 }

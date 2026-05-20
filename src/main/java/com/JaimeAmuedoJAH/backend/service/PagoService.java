@@ -50,7 +50,7 @@ public class PagoService {
                     .exitoso(false)
                     .mensaje("CVV incorrecto.")
                     .carritoId(request.getCarritoId())
-                    .clienteId(request.getClienteId())
+                    .clientePublicId(request.getClientePublicId())
                     .build();
         }
 
@@ -59,7 +59,7 @@ public class PagoService {
                     .exitoso(false)
                     .mensaje("Fecha de expiración incorrecta.")
                     .carritoId(request.getCarritoId())
-                    .clienteId(request.getClienteId())
+                    .clientePublicId(request.getClientePublicId())
                     .build();
         }
 
@@ -69,7 +69,7 @@ public class PagoService {
                     .exitoso(false)
                     .mensaje("Saldo insuficiente. Saldo disponible: " + tarjeta.getSaldo() + " €")
                     .carritoId(request.getCarritoId())
-                    .clienteId(request.getClienteId())
+                    .clientePublicId(request.getClientePublicId())
                     .build();
         }
 
@@ -87,7 +87,7 @@ public class PagoService {
                 .mensaje("Pago procesado correctamente.")
                 .codigoTransaccion(codigoTransaccion)
                 .carritoId(request.getCarritoId())
-                .clienteId(request.getClienteId())
+                .clientePublicId(request.getClientePublicId())
                 .build();
     }
 

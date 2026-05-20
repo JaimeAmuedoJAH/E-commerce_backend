@@ -12,7 +12,7 @@ public class PagoRequestDTO {
     private Long carritoId;
 
     @NotNull(message = "El ID del cliente no puede ser nulo")
-    private Long clienteId;
+    private String clientePublicId; 
 
     @NotBlank(message = "El número de tarjeta no puede estar vacío")
     private String numeroTarjeta;

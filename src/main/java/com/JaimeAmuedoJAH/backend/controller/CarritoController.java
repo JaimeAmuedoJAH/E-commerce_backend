@@ -27,9 +27,10 @@ public class CarritoController {
         return ResponseEntity.ok(carritoService.obtenerCarritoPorId(id));
     }
 
-    @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<CarritoResponseDTO>> obtenerCarritosPorCliente(@PathVariable Long clienteId) {
-        return ResponseEntity.ok(carritoService.obtenerCarritosPorCliente(clienteId));
+    @GetMapping("/cliente/{clientePublicId}")
+    public ResponseEntity<List<CarritoResponseDTO>> obtenerCarritosPorCliente(
+            @PathVariable String clientePublicId) {  // era Long
+        return ResponseEntity.ok(carritoService.obtenerCarritosPorCliente(clientePublicId));
     }
 
     @PostMapping("/add")
