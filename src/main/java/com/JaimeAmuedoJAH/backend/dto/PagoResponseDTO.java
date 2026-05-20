@@ -15,5 +15,5 @@ public class PagoResponseDTO {
     private String mensaje;
     private String codigoTransaccion;
     private Long carritoId;
-    private Long clienteId;
+    private String clientePublicId;
 }

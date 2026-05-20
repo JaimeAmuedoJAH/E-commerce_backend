@@ -19,13 +19,11 @@ import java.util.stream.Collectors;
 public class CarritoMapping {
 
     public static CarritoResponseDTO toResponseDTO(CarritoEntity carrito, Map<Long, ProductoResponseDTO> productos) {
-        if (carrito == null) {
-            return null;
-        }
+        if (carrito == null) return null;
 
         CarritoResponseDTO dto = new CarritoResponseDTO();
         dto.setId(carrito.getId());
-        dto.setClienteId(carrito.getClienteId());
+        dto.setClientePublicId(carrito.getClientePublicId());
 
         if (carrito.getItems() == null || carrito.getItems().isEmpty()) {
             dto.setItems(Collections.emptyList());
@@ -52,7 +50,7 @@ public class CarritoMapping {
 
     public static CarritoEntity toEntity(CarritoRequestDTO request) {
         CarritoEntity carrito = new CarritoEntity();
-        carrito.setClienteId(request.getClienteId());
+        carrito.setClientePublicId(request.getClientePublicId());  // cambiado
         carrito.setItems(request.getItems().stream()
                 .map(CarritoMapping::toItemEntity)
                 .collect(Collectors.toList()));

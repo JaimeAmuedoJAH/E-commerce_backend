@@ -27,22 +27,23 @@ public class TarjetaService {
     private final EncryptionUtil encryptionUtil; // ✅ Añadido
 
     public TarjetaResponseDTO crearTarjeta(TarjetaRequestDTO request) {
-        // ✅ Buscar duplicado por hash
         String hash = encryptionUtil.hashForSearch(request.getNumeroTarjeta());
         tarjetaRepository.findByNumeroHash(hash)
                 .ifPresent(t -> { throw new ConflictException("Ya existe una tarjeta con ese número"); });
 
-        UsuarioEntity usuario = usuarioRepository.findById(request.getClienteId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id " + request.getClienteId()));
+        UsuarioEntity usuario = usuarioRepository.findByPublicId(request.getClientePublicId())  
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + request.getClientePublicId()));
 
         TarjetaEntity tarjeta = TarjetaMapping.toEntity(request, usuario);
-        tarjeta.setNumeroHash(hash); // ✅ Guardar el hash
+        tarjeta.setNumeroHash(hash);
         return TarjetaMapping.toResponseDTO(tarjetaRepository.save(tarjeta));
     }
 
     @Transactional(readOnly = true)
-    public List<TarjetaResponseDTO> obtenerTarjetasPorCliente(Long clienteId) {
-        return tarjetaRepository.findByUsuarioId(clienteId)
+    public List<TarjetaResponseDTO> obtenerTarjetasPorCliente(String clientePublicId) {  
+        UsuarioEntity usuario = usuarioRepository.findByPublicId(clientePublicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + clientePublicId));
+        return tarjetaRepository.findByUsuarioId(usuario.getId())
                 .stream()
                 .map(TarjetaMapping::toResponseDTO)
                 .collect(Collectors.toList());

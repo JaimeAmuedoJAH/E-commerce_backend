@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 public class OrdenRequestDTO {
 
-    @NotNull(message = "El ID del cliente no puede ser nulo")
-    private Long clienteId;
+   @NotNull(message = "El ID del cliente no puede ser nulo")
+    private String clientePublicId;
 
     @NotNull(message = "La dirección no puede ser nula")
     private String direccion;

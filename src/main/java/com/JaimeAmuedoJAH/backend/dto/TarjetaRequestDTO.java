@@ -9,7 +9,7 @@ import com.JaimeAmuedoJAH.backend.validation.ValidExpirationDate;
 public class TarjetaRequestDTO {
 
     @NotNull(message = "El ID del cliente no puede ser nulo")
-    private Long clienteId;
+    private String clientePublicId;
 
     @NotBlank(message = "El número de tarjeta no puede estar vacío")
     @ValidCardNumber

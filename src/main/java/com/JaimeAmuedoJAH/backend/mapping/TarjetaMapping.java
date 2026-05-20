@@ -21,7 +21,7 @@ public class TarjetaMapping {
     public static TarjetaResponseDTO toResponseDTO(TarjetaEntity entity) {
         TarjetaResponseDTO dto = new TarjetaResponseDTO();
         dto.setId(entity.getId());
-        dto.setClienteId(entity.getUsuario().getId());
+        dto.setClientePublicId(entity.getUsuario().getPublicId());  
         dto.setNumeroTarjeta(maskCardNumber(entity.getNumeroTarjeta()));
         dto.setTitular(entity.getTitular());
         dto.setFechaExpiracion(entity.getFechaExpiracion());

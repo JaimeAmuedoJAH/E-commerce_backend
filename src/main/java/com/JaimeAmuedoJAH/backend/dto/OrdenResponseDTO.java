@@ -8,7 +8,7 @@ import java.util.List;
 public class OrdenResponseDTO {
 
     private Long id;
-    private Long clienteId;
+    private String clientePublicId;
     private String clienteNombre;
     private String direccion;
     private Double total;

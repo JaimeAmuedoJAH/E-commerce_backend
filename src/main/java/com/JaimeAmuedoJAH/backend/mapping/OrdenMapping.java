@@ -29,7 +29,7 @@ public class OrdenMapping {
         response.setCodigoTransaccion(orden.getCodigoTransaccion());
 
         if (orden.getCliente() != null) {
-            response.setClienteId(orden.getCliente().getId());
+            response.setClientePublicId(orden.getCliente().getPublicId());  // era: getId()
             response.setClienteNombre(orden.getCliente().getNombre());
         }
 
@@ -77,14 +77,14 @@ public class OrdenMapping {
                 .sum();
 
         return OrdenEntity.builder()
-        .cliente(cliente)
-        .direccion(request.getDireccion())
-        .total(total)
-        .items(items)
-        .codigoTransaccion(request.getCodigoTransaccion())
-        .estado(OrdenEntity.EstadoOrden.PENDIENTE)
-        .fechaCreacion(java.time.LocalDateTime.now())
-        .build();
+                .cliente(cliente)
+                .direccion(request.getDireccion())
+                .total(total)
+                .items(items)
+                .codigoTransaccion(request.getCodigoTransaccion())
+                .estado(OrdenEntity.EstadoOrden.PENDIENTE)
+                .fechaCreacion(java.time.LocalDateTime.now())
+                .build();
     }
 
     private static OrdenItemEntity toItemEntity(OrdenItemRequestDTO request, List<ProductoEntity> productos) {

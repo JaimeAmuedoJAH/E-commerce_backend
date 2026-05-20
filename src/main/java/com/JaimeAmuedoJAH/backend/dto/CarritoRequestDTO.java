@@ -10,7 +10,7 @@ import java.util.List;
 public class CarritoRequestDTO {
 
     @NotNull(message = "El ID del cliente no puede ser nulo")
-    private Long clienteId;
+    private String clientePublicId;  // era: Long clienteId
 
     @NotEmpty(message = "El carrito debe contener al menos un ítem")
     private List<CarritoItemRequestDTO> items;

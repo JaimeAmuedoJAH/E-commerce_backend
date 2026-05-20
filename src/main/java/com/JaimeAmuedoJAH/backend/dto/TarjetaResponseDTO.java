@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class TarjetaResponseDTO {
 
     private Long id;
-    private Long clienteId;
+    private String clientePublicId;
     
     /**
      * Número de tarjeta enmascarado (ej: **** **** **** 9010)

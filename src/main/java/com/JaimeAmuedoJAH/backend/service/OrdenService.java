@@ -75,13 +75,12 @@ public class OrdenService {
      * Obtener órdenes por cliente
      */
     @Transactional(readOnly = true)
-    public List<OrdenResponseDTO> obtenerOrdenesPorCliente(Long clienteId) {
-        // Validar que el cliente existe
-        usuarioRepository.findById(clienteId)
+    public List<OrdenResponseDTO> obtenerOrdenesPorCliente(String clientePublicId) {  // era: Long clienteId
+        UsuarioEntity cliente = usuarioRepository.findByPublicId(clientePublicId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Cliente not found with id " + clienteId));
+                        "Cliente not found: " + clientePublicId));
 
-        return ordenRepository.findByClienteIdOrderByFechaCreacionDesc(clienteId)
+        return ordenRepository.findByClienteIdOrderByFechaCreacionDesc(cliente.getId())
                 .stream()
                 .map(OrdenMapping::toResponseDTO)
                 .collect(Collectors.toList());
@@ -103,9 +102,9 @@ public class OrdenService {
      */
     public OrdenResponseDTO crearOrden(OrdenRequestDTO ordenRequest) {
         // Validar cliente
-        UsuarioEntity cliente = usuarioRepository.findById(ordenRequest.getClienteId())
+        UsuarioEntity cliente = usuarioRepository.findByPublicId(ordenRequest.getClientePublicId())  // era: findById
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Cliente not found with id " + ordenRequest.getClienteId()));
+                        "Cliente not found: " + ordenRequest.getClientePublicId()));
 
         // Validar productos y obtener entidades
         List<Long> productoIds = ordenRequest.getItems().stream()
