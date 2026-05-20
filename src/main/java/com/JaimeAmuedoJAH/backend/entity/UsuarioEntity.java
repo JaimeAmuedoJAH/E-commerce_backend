@@ -22,6 +22,9 @@ public class UsuarioEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, updatable = false)
+    private String publicId;
+
     @Column(nullable = false)
     private String nombre;
 

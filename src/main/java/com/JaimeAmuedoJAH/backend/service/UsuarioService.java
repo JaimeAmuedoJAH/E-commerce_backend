@@ -37,10 +37,10 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public UsuarioResponseDTO obtenerUsuarioPorId(Long id) {
-        UsuarioEntity usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario not found with id " + id));
-        return UsuarioMapping.toResponseDTO(usuario);
+    public UsuarioResponseDTO obtenerUsuarioPorId(String publicId) {
+        UsuarioEntity usuario = usuarioRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario not found: " + publicId));
+    return UsuarioMapping.toResponseDTO(usuario);
     }
 
     public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO request) {
@@ -66,9 +66,9 @@ public class UsuarioService {
         return UsuarioMapping.toLoginResponseDTO(usuario, token);
     }
 
-    public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioUpdateRequestDTO request) {
-        UsuarioEntity usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario not found with id " + id));
+    public UsuarioResponseDTO actualizarUsuario(String publicId, UsuarioUpdateRequestDTO request) {
+       UsuarioEntity usuario = usuarioRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario not found: " + publicId));
 
         if (request.getEmail() != null && !request.getEmail().equals(usuario.getEmail())
                 && usuarioRepository.existsByEmail(request.getEmail())) {
@@ -81,13 +81,12 @@ public class UsuarioService {
             usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        UsuarioEntity updated = usuarioRepository.save(usuario);
-        return UsuarioMapping.toResponseDTO(updated);
+        return UsuarioMapping.toResponseDTO(usuarioRepository.save(usuario));
     }
 
-    public void eliminarUsuario(Long id) {
-        UsuarioEntity usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario not found with id " + id));
+    public void eliminarUsuario(String publicId) {
+        UsuarioEntity usuario = usuarioRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario not found: " + publicId));
         usuarioRepository.delete(usuario);
     }
 }
