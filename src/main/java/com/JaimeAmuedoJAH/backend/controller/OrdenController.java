@@ -45,12 +45,10 @@ public class OrdenController {
     /**
      * Obtener órdenes por cliente
      */
-    @GetMapping("/cliente/{clienteId}")
-    @Operation(summary = "Obtener todas las órdenes de un cliente")
+    @GetMapping("/cliente/{clientePublicId}")
     public ResponseEntity<List<OrdenResponseDTO>> obtenerOrdenesPorCliente(
-            @PathVariable Long clienteId) {
-        List<OrdenResponseDTO> ordenes = ordenService.obtenerOrdenesPorCliente(clienteId);
-        return ResponseEntity.ok(ordenes);
+            @PathVariable String clientePublicId) {  // era: Long clienteId
+        return ResponseEntity.ok(ordenService.obtenerOrdenesPorCliente(clientePublicId));
     }
 
     /**
