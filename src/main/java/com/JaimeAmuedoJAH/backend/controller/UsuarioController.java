@@ -25,11 +25,13 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioResponseDTO>> obtenerTodosLosUsuarios() {
         return ResponseEntity.ok(usuarioService.obtenerTodosLosUsuarios());
     }
 
     @GetMapping("/{publicId}")
+    @PreAuthorize("hasRole('ADMIN') or #publicId == authentication.principal.publicId")
     public ResponseEntity<UsuarioResponseDTO> obtenerUsuarioPorId(@PathVariable String publicId) {
         return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(publicId));
     }
@@ -49,6 +51,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/update/{publicId}")
+    @PreAuthorize("hasRole('ADMIN') or #publicId == authentication.principal.publicId")
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(
             @PathVariable String publicId,
             @Valid @RequestBody UsuarioUpdateRequestDTO usuarioRequest) {
@@ -56,6 +59,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/delete/{publicId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable String publicId) {
         usuarioService.eliminarUsuario(publicId);
         return ResponseEntity.noContent().build();

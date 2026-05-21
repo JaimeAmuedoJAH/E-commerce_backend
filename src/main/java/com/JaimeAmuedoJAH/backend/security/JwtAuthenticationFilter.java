@@ -45,41 +45,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Obtiene el header Authorization de la petición
         final String authorizationHeader = request.getHeader("Authorization");
         String token = null;
 
-        // Extrae el token del formato "Bearer <token>"
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            token = authorizationHeader.substring(7);  // Elimina "Bearer " para obtener solo el token
+            token = authorizationHeader.substring(7);
         }
 
-        // Valida el token y verifica que no haya autenticación previa
         if (token != null && jwtUtil.isTokenValid(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Extrae el email del token
             String email = jwtUtil.extractEmail(token);
-            // Busca el usuario en la base de datos por email
             usuarioRepository.findByEmail(email).ifPresent(usuario -> {
-                // Crea un objeto User de Spring Security con los datos del usuario
-                UserDetails principal = User.withUsername(usuario.getEmail())
-                        .password(usuario.getPassword())
-                        .authorities(usuario.getRol())  // Asigna el rol como autoridad
-                        .build();
+                // Usar UsuarioPrincipal en lugar de User genérico
+                UsuarioPrincipal principal = new UsuarioPrincipal(usuario);
 
-                // Crea un token de autenticación con el usuario y sus autoridades
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        principal,           // El usuario autenticado
-                        null,                // No hay credenciales adicionales
-                        principal.getAuthorities()  // Las autoridades (roles) del usuario
+                        principal,
+                        null,
+                        principal.getAuthorities()
                 );
-                // Asigna detalles de la petición al token de autenticación
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // Almacena la autenticación en el contexto de seguridad de Spring
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             });
         }
 
-        // Continúa con la siguiente cadena de filtros
         filterChain.doFilter(request, response);
     }
 }

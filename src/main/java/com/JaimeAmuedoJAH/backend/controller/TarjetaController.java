@@ -24,6 +24,7 @@ public class TarjetaController {
     }
 
     @GetMapping("/cliente/{clientePublicId}")
+    @PreAuthorize("hasRole('ADMIN') or #clientePublicId == authentication.principal.publicId")
     public ResponseEntity<List<TarjetaResponseDTO>> obtenerTarjetasPorCliente(
             @PathVariable String clientePublicId) {  // era: Long clienteId
         return ResponseEntity.ok(tarjetaService.obtenerTarjetasPorCliente(clientePublicId));
@@ -35,6 +36,7 @@ public class TarjetaController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminarTarjeta(@PathVariable Long id) {
         tarjetaService.eliminarTarjeta(id);
         return ResponseEntity.noContent().build();

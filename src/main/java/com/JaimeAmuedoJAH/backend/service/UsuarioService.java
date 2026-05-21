@@ -27,6 +27,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
 
     @Transactional(readOnly = true)
@@ -50,8 +51,15 @@ public class UsuarioService {
 
         UsuarioEntity usuario = UsuarioMapping.toEntity(request);
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
-        UsuarioEntity saved = usuarioRepository.save(usuario);
-        return UsuarioMapping.toResponseDTO(saved);
+
+        // Normalizar rol — siempre con ROLE_
+        String rol = request.getRol() != null ? request.getRol() : "ROLE_USER";
+        if (!rol.startsWith("ROLE_")) {
+            rol = "ROLE_" + rol.toUpperCase();
+        }
+        usuario.setRol(rol);
+
+        return UsuarioMapping.toResponseDTO(usuarioRepository.save(usuario));
     }
 
     public UsuarioLoginResponseDTO login(UsuarioLoginRequestDTO loginRequest) {
@@ -63,11 +71,19 @@ public class UsuarioService {
         }
 
         String token = jwtUtil.generateToken(usuario.getEmail());
-        return UsuarioMapping.toLoginResponseDTO(usuario, token);
+        RefreshTokenEntity refreshToken = refreshTokenService.crearRefreshToken(usuario);
+
+        return UsuarioMapping.toLoginResponseDTO(usuario, token, refreshToken.getToken());
+    }
+
+    public void logout(String publicId) {
+        UsuarioEntity usuario = usuarioRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario not found: " + publicId));
+        refreshTokenService.eliminarRefreshToken(usuario);
     }
 
     public UsuarioResponseDTO actualizarUsuario(String publicId, UsuarioUpdateRequestDTO request) {
-       UsuarioEntity usuario = usuarioRepository.findByPublicId(publicId)
+        UsuarioEntity usuario = usuarioRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario not found: " + publicId));
 
         if (request.getEmail() != null && !request.getEmail().equals(usuario.getEmail())
@@ -75,11 +91,18 @@ public class UsuarioService {
             throw new ConflictException("Ya existe un usuario con este email");
         }
 
-        UsuarioMapping.updateEntity(request, usuario);
-
+        // Si quiere cambiar contraseña, verificar la actual
         if (request.getPassword() != null) {
+            if (request.getPasswordActual() == null) {
+                throw new AuthenticationException("Debes introducir tu contraseña actual para cambiarla");
+            }
+            if (!passwordEncoder.matches(request.getPasswordActual(), usuario.getPassword())) {
+                throw new AuthenticationException("La contraseña actual es incorrecta");
+            }
             usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         }
+
+        UsuarioMapping.updateEntity(request, usuario);
 
         return UsuarioMapping.toResponseDTO(usuarioRepository.save(usuario));
     }

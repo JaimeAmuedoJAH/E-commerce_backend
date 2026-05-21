@@ -19,6 +19,7 @@ public class UsuarioMapping {
         dto.setNombre(usuario.getNombre());
         dto.setEmail(usuario.getEmail());
         dto.setRol(usuario.getRol());
+        dto.setImagenPerfil(usuario.getImagenPerfil());
         return dto;
     }
 
@@ -35,13 +36,12 @@ public class UsuarioMapping {
             .build();
     }
 
-    public static UsuarioLoginResponseDTO toLoginResponseDTO(UsuarioEntity usuario, String token) {
-        if (usuario == null || token == null) {
-            return null;
-        }
+    public static UsuarioLoginResponseDTO toLoginResponseDTO(UsuarioEntity usuario, String token, String refreshToken) {
+        if (usuario == null || token == null) return null;
 
         UsuarioLoginResponseDTO response = new UsuarioLoginResponseDTO();
         response.setToken(token);
+        response.setRefreshToken(refreshToken);
         response.setUsuario(toResponseDTO(usuario));
         return response;
     }
@@ -62,6 +62,9 @@ public class UsuarioMapping {
         }
         if (request.getRol() != null) {
             usuario.setRol(request.getRol());
+        }
+        if (request.getImagenPerfil() != null) {
+            usuario.setImagenPerfil(request.getImagenPerfil());
         }
     }
 }
