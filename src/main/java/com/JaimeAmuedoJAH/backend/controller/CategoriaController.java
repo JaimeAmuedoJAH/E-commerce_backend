@@ -13,6 +13,7 @@ import com.JaimeAmuedoJAH.backend.entity.CategoriaEntity;
 import com.JaimeAmuedoJAH.backend.repository.CategoriaRepository;
 import com.JaimeAmuedoJAH.backend.mapping.CategoriaMapping;
 import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
+import com.JaimeAmuedoJAH.backend.dto.CategoriaResponseDetalleDTO;
 
 @RestController
 @RequestMapping("/categorias")
@@ -34,9 +35,8 @@ public class CategoriaController {
      * Obtener una categoría por ID con sus productos
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaResponseDTO> obtenerCategoriaPorId(@PathVariable Long id) {
-        CategoriaResponseDTO categoria = categoriaService.obtenerCategoriaPorId(id);
-        return ResponseEntity.ok(categoria);
+    public ResponseEntity<CategoriaResponseDetalleDTO> obtenerCategoriaPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(categoriaService.obtenerCategoriaPorId(id));
     }
 
     /**

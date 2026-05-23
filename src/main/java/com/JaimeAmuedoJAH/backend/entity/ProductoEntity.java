@@ -29,6 +29,7 @@ public class ProductoEntity {
     @Column(nullable = false)
     private Double precio;
 
+    @Column(columnDefinition = "TEXT")
     private String imagen;
 
     @Column(nullable = false)

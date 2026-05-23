@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 import java.util.Arrays;
 
@@ -61,6 +62,9 @@ public class SecurityConfig {
                 // Públicos
                 .requestMatchers("/usuarios/register").permitAll()
                 .requestMatchers("/usuarios/login").permitAll()
+                .requestMatchers("/productos/**").permitAll()
+                .requestMatchers("/categorias/**").permitAll()
+                .requestMatchers("/auth/logout").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/images/**").permitAll()
                 .requestMatchers("/auth/refresh").permitAll()

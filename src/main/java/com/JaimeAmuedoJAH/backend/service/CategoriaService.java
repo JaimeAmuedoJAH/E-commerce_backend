@@ -6,6 +6,7 @@ import com.JaimeAmuedoJAH.backend.entity.CategoriaEntity;
 import com.JaimeAmuedoJAH.backend.dto.CategoriaRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.CategoriaResponseDTO;
 import com.JaimeAmuedoJAH.backend.mapping.CategoriaMapping;
+import com.JaimeAmuedoJAH.backend.dto.CategoriaResponseDetalleDTO;
 import com.JaimeAmuedoJAH.backend.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,18 +24,17 @@ public class CategoriaService {
      */
     public List<CategoriaResponseDTO> obtenerTodasLasCategorias() {
         return categoriaRepository.findAll().stream()
-                .map(CategoriaMapping::toResponseDTO)
+                .map(CategoriaMapping::toResponseDTO)  // sin productos
                 .collect(Collectors.toList());
     }
 
     /**
      * Obtener una categoría por ID con sus productos
      */
-    public CategoriaResponseDTO obtenerCategoriaPorId(Long id) {
+    public CategoriaResponseDetalleDTO obtenerCategoriaPorId(Long id) {
         CategoriaEntity categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Categoria not found with id " + id));
-        return CategoriaMapping.toResponseDTO(categoria);
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria not found with id " + id));
+        return CategoriaMapping.toDetalleDTO(categoria);  // con productos
     }
 
     /**

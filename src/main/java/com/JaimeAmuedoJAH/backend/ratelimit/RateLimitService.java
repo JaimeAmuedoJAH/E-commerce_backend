@@ -1,99 +1,129 @@
 package com.JaimeAmuedoJAH.backend.ratelimit;
 
 import com.JaimeAmuedoJAH.backend.exceptions.TooManyRequestsException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.Clock;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class RateLimitService {
 
+    private final Clock clock;
+
+    static final int MAX_ENTRIES = 100_000;
+
     private final ConcurrentHashMap<String, RequestCounter> counters = new ConcurrentHashMap<>();
 
+    public RateLimitService(Clock clock) {
+        this.clock = clock;
+    }
+
     /**
-     * Check if the request should be allowed based on rate limiting rules
-     * @param key Unique identifier (usually IP address or user email)
-     * @param maxAttempts Maximum attempts allowed
-     * @param windowSizeSeconds Time window in seconds
-     * @return true if request is allowed, throws TooManyRequestsException if not
+     * Comprueba si la petición debe ser permitida.
+     *
+     * La clave combina clientId + endpoint para que el contador de
+     * /login no interfiera con el de /search, y viceversa.
+     *
+     * @param clientId          IP o userId del cliente
+     * @param endpoint          URI del endpoint (e.g. "/api/auth/login")
+     * @param maxAttempts       Máximo de intentos permitidos en la ventana
+     * @param windowSizeSeconds Tamaño de la ventana en segundos
+     * @return Intentos restantes (>= 0)
+     * @throws TooManyRequestsException si se supera el límite
      */
-    public boolean allowRequest(String key, int maxAttempts, int windowSizeSeconds) {
-        long currentTime = System.currentTimeMillis();
-        long windowStart = currentTime - TimeUnit.SECONDS.toMillis(windowSizeSeconds);
-
-        counters.compute(key, (k, counter) -> {
-            if (counter == null) {
-                counter = new RequestCounter(currentTime, 1);
-            } else if (counter.windowStart < windowStart) {
-                // New window, reset counter
-                counter = new RequestCounter(currentTime, 1);
-            } else {
-                // Same window, increment counter
-                counter.attempts++;
-                counter.lastRequestTime = currentTime;
-            }
-            return counter;
-        });
-
-        RequestCounter counter = counters.get(key);
-        
-        if (counter.attempts > maxAttempts) {
-            log.warn("Rate limit exceeded for key: {} with {} attempts", key, counter.attempts);
+    public int allowRequest(String clientId, String endpoint, int maxAttempts, int windowSizeSeconds) {
+        // rechazar antes de insertar si el mapa está lleno
+        if (counters.size() >= MAX_ENTRIES) {
+            log.error("Rate limit map full ({} entries) — rejecting request from {}", MAX_ENTRIES, clientId);
             throw new TooManyRequestsException(
-                    "Too many requests. Maximum " + maxAttempts + " attempts per " + windowSizeSeconds + " seconds."
+                    "Service temporarily unavailable. Please try again later.",
+                    windowSizeSeconds
             );
         }
 
-        return true;
+        long now        = clock.millis();
+        long windowSize = TimeUnit.SECONDS.toMillis(windowSizeSeconds);
+
+        // clave por cliente + endpoint
+        String bucketKey = clientId + "|" + endpoint;
+
+        // compute() atómico, resultado usado directamente (sin get() separado)
+        RequestCounter counter = counters.compute(bucketKey, (k, existing) -> {
+            if (existing == null || (now - existing.windowStart.get()) >= windowSize) {
+                return new RequestCounter(now, 1);
+            }
+            existing.attempts.incrementAndGet();
+            existing.lastRequestTime.set(now);
+            return existing;
+        });
+
+        int attempts = counter.attempts.get();
+
+        if (attempts > maxAttempts) {
+            long windowStart   = counter.windowStart.get();
+            long resetAt       = windowStart + windowSize;
+            int retryAfterSec  = (int) Math.max(1, TimeUnit.MILLISECONDS.toSeconds(resetAt - now));
+
+            log.warn("Rate limit exceeded — client: {}, endpoint: {}, attempts: {}/{}",
+                    clientId, endpoint, attempts, maxAttempts);
+
+            throw new TooManyRequestsException(
+                    "Too many requests. Maximum " + maxAttempts +
+                    " attempts per " + windowSizeSeconds + " seconds.",
+                    retryAfterSec   // tiempo exacto hasta que se libera la ventana
+            );
+        }
+
+        return maxAttempts - attempts;
     }
 
-    /**
-     * Get the current attempt count for a key
-     */
-    public int getAttemptCount(String key) {
-        RequestCounter counter = counters.get(key);
-        return counter != null ? counter.attempts : 0;
+    public int getAttemptCount(String clientId, String endpoint) {
+        RequestCounter counter = counters.get(clientId + "|" + endpoint);
+        return counter != null ? counter.attempts.get() : 0;
     }
 
-    /**
-     * Reset the counter for a specific key
-     */
-    public void resetCounter(String key) {
+    public void resetCounter(String clientId, String endpoint) {
+        String key = clientId + "|" + endpoint;
         counters.remove(key);
-        log.info("Rate limit counter reset for key: {}", key);
+        log.info("Rate limit counter reset — key: {}", key);
     }
 
     /**
-     * Clean up old entries to prevent memory leaks
-     * Should be called periodically
+     * Elimina entradas sin actividad en la última hora.
+     * Llamado por el @Scheduled en RateLimitConfig.
      */
     public void cleanup() {
-        long currentTime = System.currentTimeMillis();
-        long maxAge = TimeUnit.HOURS.toMillis(1); // Remove entries older than 1 hour
-        
-        counters.entrySet().removeIf(entry -> 
-            (currentTime - entry.getValue().lastRequestTime) > maxAge
+        long now    = clock.millis();
+        long maxAge = TimeUnit.HOURS.toMillis(1);
+
+        int before = counters.size();
+        counters.entrySet().removeIf(e ->
+                (now - e.getValue().lastRequestTime.get()) > maxAge
         );
-        
-        log.debug("Rate limit counters cleanup completed");
+        int removed = before - counters.size();
+
+        if (removed > 0) {
+            log.debug("Rate limit cleanup: {} entradas eliminadas ({} restantes)", removed, counters.size());
+        }
     }
 
-    /**
-     * Inner class to track request attempts
-     */
-    private static class RequestCounter {
-        long windowStart;
-        int attempts;
-        long lastRequestTime;
+    // -------------------------------------------------------------------------
 
-        RequestCounter(long windowStart, int attempts) {
-            this.windowStart = windowStart;
-            this.attempts = attempts;
-            this.lastRequestTime = windowStart;
+    private static final class RequestCounter {
+        final AtomicLong    windowStart;
+        final AtomicInteger attempts;
+        final AtomicLong    lastRequestTime;
+
+        RequestCounter(long windowStart, int initialAttempts) {
+            this.windowStart     = new AtomicLong(windowStart);
+            this.attempts        = new AtomicInteger(initialAttempts);
+            this.lastRequestTime = new AtomicLong(windowStart);
         }
     }
 }

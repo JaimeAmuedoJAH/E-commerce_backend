@@ -24,7 +24,7 @@ public class TarjetaService {
 
     private final TarjetaRepository tarjetaRepository;
     private final UsuarioRepository usuarioRepository;
-    private final EncryptionUtil encryptionUtil; // ✅ Añadido
+    private final EncryptionUtil encryptionUtil; 
 
     public TarjetaResponseDTO crearTarjeta(TarjetaRequestDTO request) {
         String hash = encryptionUtil.hashForSearch(request.getNumeroTarjeta());

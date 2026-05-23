@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "usuario")
 @Data
-@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,7 +33,7 @@ public class UsuarioEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, editable = false)
+    @Column(nullable = false, updatable = false)
     private String rol;
 
     @Column(name = "imagen_perfil", nullable = true, columnDefinition = "TEXT")

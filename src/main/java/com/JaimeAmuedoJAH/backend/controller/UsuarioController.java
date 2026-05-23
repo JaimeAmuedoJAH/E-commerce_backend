@@ -13,6 +13,7 @@ import com.JaimeAmuedoJAH.backend.dto.UsuarioResponseDTO;
 import com.JaimeAmuedoJAH.backend.dto.UsuarioUpdateRequestDTO;
 import com.JaimeAmuedoJAH.backend.service.UsuarioService;
 import com.JaimeAmuedoJAH.backend.ratelimit.RateLimit;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 

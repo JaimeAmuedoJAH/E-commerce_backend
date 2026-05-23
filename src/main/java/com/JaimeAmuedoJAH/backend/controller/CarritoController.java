@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import com.JaimeAmuedoJAH.backend.dto.CarritoRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.CarritoResponseDTO;
 import com.JaimeAmuedoJAH.backend.service.CarritoService;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 

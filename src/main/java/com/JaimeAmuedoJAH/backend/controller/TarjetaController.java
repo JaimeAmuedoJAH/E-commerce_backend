@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.JaimeAmuedoJAH.backend.dto.TarjetaRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.TarjetaResponseDTO;
 import com.JaimeAmuedoJAH.backend.service.TarjetaService;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class TarjetaController {
     }
 
     @GetMapping("/cliente/{clientePublicId}")
-    @PreAuthorize("hasRole('ADMIN') or #clientePublicId == authentication.principal.publicId")
+    @PreAuthorize("hasRole('ADMIN') or @authorizationService.esElMismoUsuario(authentication, #clientePublicId)")
     public ResponseEntity<List<TarjetaResponseDTO>> obtenerTarjetasPorCliente(
             @PathVariable String clientePublicId) {  // era: Long clienteId
         return ResponseEntity.ok(tarjetaService.obtenerTarjetasPorCliente(clientePublicId));
