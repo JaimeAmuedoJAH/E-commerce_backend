@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "usuario")
 @Data
-@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,8 +33,11 @@ public class UsuarioEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private String rol;
+
+    @Column(name = "imagen_perfil", nullable = true, columnDefinition = "TEXT")
+    private String imagenPerfil;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TarjetaEntity> tarjetas;

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import com.JaimeAmuedoJAH.backend.dto.CarritoRequestDTO;
 import com.JaimeAmuedoJAH.backend.dto.CarritoResponseDTO;
 import com.JaimeAmuedoJAH.backend.service.CarritoService;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class CarritoController {
     private final CarritoService carritoService;
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<CarritoResponseDTO>> obtenerTodosLosCarritos() {
         return ResponseEntity.ok(carritoService.obtenerTodosLosCarritos());
     }
@@ -28,6 +30,7 @@ public class CarritoController {
     }
 
     @GetMapping("/cliente/{clientePublicId}")
+    @PreAuthorize("hasRole('ADMIN') or #clientePublicId == authentication.principal.publicId")
     public ResponseEntity<List<CarritoResponseDTO>> obtenerCarritosPorCliente(
             @PathVariable String clientePublicId) {  // era Long
         return ResponseEntity.ok(carritoService.obtenerCarritosPorCliente(clientePublicId));

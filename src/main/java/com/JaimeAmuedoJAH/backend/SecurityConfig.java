@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 import java.util.Arrays;
 
@@ -20,6 +21,7 @@ import java.util.Arrays;
  */
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -52,26 +54,40 @@ public class SecurityConfig {
      * @return SecurityFilterChain configurada
      */
    @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/usuarios/register").permitAll()
-            .requestMatchers("/usuarios/login").permitAll()
-            .requestMatchers("/h2-console/**").permitAll()
-            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-        .headers(headers -> headers
-            .frameOptions(frameOptions -> frameOptions.disable())
-        )
-        .httpBasic(httpBasic -> httpBasic.disable());
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(authz -> authz
+                // Públicos
+                .requestMatchers("/usuarios/register").permitAll()
+                .requestMatchers("/usuarios/login").permitAll()
+                .requestMatchers("/productos/**").permitAll()
+                .requestMatchers("/categorias/**").permitAll()
+                .requestMatchers("/auth/logout").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/images/**").permitAll()
+                .requestMatchers("/auth/refresh").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
-    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    return http.build();
-}
+                // Solo ADMIN
+                .requestMatchers("/usuarios/all").hasRole("ADMIN")
+                .requestMatchers("/usuarios/delete/**").hasRole("ADMIN")
+                .requestMatchers("/ordenes/all").hasRole("ADMIN")
+                .requestMatchers("/ordenes/estado/**").hasRole("ADMIN")
+
+                // Autenticados
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.disable())
+            )
+            .httpBasic(httpBasic -> httpBasic.disable());
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 }

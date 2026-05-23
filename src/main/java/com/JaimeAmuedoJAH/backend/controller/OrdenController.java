@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class OrdenController {
      * Obtener todas las órdenes
      */
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Obtener todas las órdenes")
     public ResponseEntity<List<OrdenResponseDTO>> obtenerTodasLasOrdenes() {
         List<OrdenResponseDTO> ordenes = ordenService.obtenerTodasLasOrdenes();
@@ -46,6 +48,7 @@ public class OrdenController {
      * Obtener órdenes por cliente
      */
     @GetMapping("/cliente/{clientePublicId}")
+    @PreAuthorize("hasRole('ADMIN') or #clientePublicId == authentication.principal.publicId")
     public ResponseEntity<List<OrdenResponseDTO>> obtenerOrdenesPorCliente(
             @PathVariable String clientePublicId) {  // era: Long clienteId
         return ResponseEntity.ok(ordenService.obtenerOrdenesPorCliente(clientePublicId));
@@ -55,6 +58,7 @@ public class OrdenController {
      * Obtener órdenes por estado
      */
     @GetMapping("/estado/{estado}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Obtener órdenes filtradas por estado")
     public ResponseEntity<List<OrdenResponseDTO>> obtenerOrdenesPorEstado(
             @PathVariable OrdenEntity.EstadoOrden estado) {
@@ -79,6 +83,7 @@ public class OrdenController {
      */
     @PutMapping("/{id}/estado")
     @Operation(summary = "Actualizar el estado de una orden")
+    @PreAuthorize("hasRole('ADMIN')")
     @RateLimit(maxAttempts = 20, windowSizeSeconds = 300)
     public ResponseEntity<OrdenResponseDTO> actualizarEstadoOrden(
             @PathVariable Long id,
@@ -102,6 +107,7 @@ public class OrdenController {
      * Eliminar una orden (solo si está cancelada)
      */
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Eliminar una orden cancelada")
     @RateLimit(maxAttempts = 5, windowSizeSeconds = 300)
     public ResponseEntity<Void> eliminarOrden(@PathVariable Long id) {

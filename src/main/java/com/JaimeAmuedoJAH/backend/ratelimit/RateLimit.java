@@ -10,12 +10,12 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RateLimit {
-    
+
     /**
      * Maximum number of requests allowed within the time window
      */
     int maxAttempts() default 10;
-    
+
     /**
      * Time window in seconds
      */

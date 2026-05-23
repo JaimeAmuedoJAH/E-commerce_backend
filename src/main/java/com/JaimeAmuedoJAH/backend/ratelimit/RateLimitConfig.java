@@ -22,11 +22,7 @@ public class RateLimitConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/swagger-ui/**", "/v3/api-docs/**");
     }
 
-    /**
-     * Scheduled task to clean up old rate limit entries
-     * Runs every hour to prevent memory leaks
-     */
-    @Scheduled(fixedDelay = 3600000) // 1 hour
+    @Scheduled(fixedDelay = 3600000)
     public void cleanupRateLimitCounters() {
         rateLimitService.cleanup();
     }
