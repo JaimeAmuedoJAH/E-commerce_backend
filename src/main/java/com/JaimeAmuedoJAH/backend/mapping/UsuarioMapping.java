@@ -54,15 +54,15 @@ public class UsuarioMapping {
         if (request.getNombre() != null) {
             usuario.setNombre(request.getNombre());
         }
+        
         if (request.getEmail() != null) {
             usuario.setEmail(request.getEmail());
         }
-        if (request.getPassword() != null) {
-            usuario.setPassword(request.getPassword());
-        }
+
         if (request.getRol() != null) {
             usuario.setRol(request.getRol());
         }
+
         if (request.getImagenPerfil() != null) {
             usuario.setImagenPerfil(request.getImagenPerfil());
         }

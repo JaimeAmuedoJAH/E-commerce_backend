@@ -25,7 +25,7 @@ public class TarjetaEntity {
     private String numeroTarjeta;
 
     // ✅ Hash SHA-256 del número plano, para búsquedas eficientes
-    @Column(name = "numero_hash", nullable = false, unique = true, length = 256)
+    @Column(name = "numero_hash", nullable = false, length = 256)
     private String numeroHash;
 
     @Column(name = "titular", nullable = false)
