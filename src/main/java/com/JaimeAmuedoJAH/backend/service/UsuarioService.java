@@ -92,7 +92,10 @@ public class UsuarioService {
             throw new ConflictException("Ya existe un usuario con este email");
         }
 
-        // Si quiere cambiar contraseña, verificar la actual
+        // 1. Actualizar campos normales (sin password)
+        UsuarioMapping.updateEntity(request, usuario);
+
+        // 2. Contraseña por separado con encriptación
         if (request.getPassword() != null) {
             if (request.getPasswordActual() == null) {
                 throw new AuthenticationException("Debes introducir tu contraseña actual para cambiarla");
@@ -102,8 +105,6 @@ public class UsuarioService {
             }
             usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         }
-
-        UsuarioMapping.updateEntity(request, usuario);
 
         return UsuarioMapping.toResponseDTO(usuarioRepository.save(usuario));
     }
